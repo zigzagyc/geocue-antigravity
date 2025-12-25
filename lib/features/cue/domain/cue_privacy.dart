@@ -1,0 +1,4 @@
+enum CuePrivacy {
+  public,
+  private,
+}

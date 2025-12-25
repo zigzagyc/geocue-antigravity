@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "773637258020",
+    "firebase_url": "https://geocue-antigravity-default-rtdb.firebaseio.com",
+    "project_id": "geocue-antigravity",
+    "storage_bucket": "geocue-antigravity.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:773637258020:android:d9a7fec22a2d4f0ec091b1",
+        "android_client_info": {
+          "package_name": "com.geocue.geocue"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG70ICwpL-u81oH0QWdz3fcMiDnLQdYN8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
