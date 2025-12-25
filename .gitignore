@@ -50,3 +50,7 @@ dist/
 # Large binaries
 firebase.exe
 firebase-win.exe
+
+# Keys and Secrets
+GoogleService-Info.plist
+lib/firebase_options.dart
