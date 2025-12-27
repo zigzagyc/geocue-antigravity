@@ -67,7 +67,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                     markers: markers,
                     initialCameraPosition: _initialCameraPosition,
                     myLocationEnabled: true,
-                    myLocationButtonEnabled: true,
+                    myLocationButtonEnabled: false,
+                    zoomControlsEnabled: false,
                     onMapCreated: (controller) => _mapController = controller,
                   ),
                   Positioned(
@@ -116,11 +117,41 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push('/create-cue');
-        },
-        child: const Icon(Icons.add_location_alt),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            heroTag: 'my_location',
+            onPressed: () async {
+              try {
+                final position = await Geolocator.getCurrentPosition();
+                _mapController?.animateCamera(
+                  CameraUpdate.newCameraPosition(
+                    CameraPosition(
+                      target: LatLng(position.latitude, position.longitude),
+                      zoom: 15,
+                    ),
+                  ),
+                );
+              } catch (e) {
+                if (context.mounted) {
+                   ScaffoldMessenger.of(context).showSnackBar(
+                     SnackBar(content: Text('Could not get location: $e')),
+                   );
+                }
+              }
+            },
+            child: const Icon(Icons.my_location),
+          ),
+          const SizedBox(height: 16),
+          FloatingActionButton(
+            heroTag: 'add_cue',
+            onPressed: () {
+              context.push('/create-cue');
+            },
+            child: const Icon(Icons.add_location_alt),
+          ),
+        ],
       ),
     );
   }

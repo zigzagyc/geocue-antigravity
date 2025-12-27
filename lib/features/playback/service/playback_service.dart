@@ -11,7 +11,17 @@ class PlaybackService extends _$PlaybackService {
   final FlutterTts _tts = FlutterTts();
   
   @override
-  FutureOr<CueModel?> build() {
+  FutureOr<CueModel?> build() async {
+    // Configure TTS for iOS
+    await _tts.setSharedInstance(true);
+    await _tts.setIosAudioCategory(IosTextToSpeechAudioCategory.playback, [
+      IosTextToSpeechAudioCategoryOptions.defaultToSpeaker,
+      IosTextToSpeechAudioCategoryOptions.allowBluetooth,
+      IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
+      IosTextToSpeechAudioCategoryOptions.mixWithOthers,
+    ]);
+    await _tts.awaitSpeakCompletion(true);
+
     ref.onDispose(() {
       _player.dispose();
       _tts.stop();
