@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:geocue/features/map/presentation/map_controller.dart';
 import 'package:geocue/features/playback/service/proximity_service.dart';
 import 'package:geocue/features/playback/service/playback_service.dart';
@@ -24,10 +26,15 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   @override
   void initState() {
     super.initState();
-    // Start monitoring proximity when the map is active
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    _requestLocationPermission();
+  }
+
+  Future<void> _requestLocationPermission() async {
+    final status = await Permission.location.request();
+    if (status.isGranted) {
+      // Start monitoring proximity only if permission granted
       ref.read(proximityServiceProvider.notifier).startMonitoring();
-    });
+    }
   }
 
   @override
@@ -50,7 +57,10 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           markersState.when(
             data: (markers) => GoogleMap(
               markers: markers,
-              initialCameraPosition: const CameraPosition(target: LatLng(0, 0), zoom: 1),
+              initialCameraPosition: _initialCameraPosition,
+              myLocationEnabled: true,
+              myLocationButtonEnabled: true,
+              onMapCreated: (controller) => _mapController = controller,
             ),
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (err, stack) => Center(child: Text('Error loading cues: $err')),
