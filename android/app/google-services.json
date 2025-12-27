@@ -13,7 +13,12 @@
           "package_name": "com.geocue.geocue"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "773637258020-trnimrn7r2invvf2e72r7cgsgcb46cdp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAG70ICwpL-u81oH0QWdz3fcMiDnLQdYN8"
@@ -21,7 +26,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "773637258020-trnimrn7r2invvf2e72r7cgsgcb46cdp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "773637258020-bsqmjv9arh7iqi7bdtag19ge1c35jhtn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.geocue.geocue"
+              }
+            }
+          ]
         }
       }
     }

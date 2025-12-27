@@ -32,6 +32,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   Future<void> _requestLocationPermission() async {
     final status = await Permission.location.request();
     if (status.isGranted) {
+      // Check if widget is still mounted before using ref
+      if (!mounted) return;
       // Start monitoring proximity only if permission granted
       ref.read(proximityServiceProvider.notifier).startMonitoring();
     }

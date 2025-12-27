@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../data/cue_repository.dart';
+import '../../cue/domain/cue_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+part 'cue_list_screen.g.dart';
 
 class CueListScreen extends ConsumerWidget {
   const CueListScreen({super.key});
@@ -12,9 +16,37 @@ class CueListScreen extends ConsumerWidget {
     // For now we can use FutureBuilder or just watch the repository if we expose a stream provider
     
     // Stub
+    final cuesAsync = ref.watch(cuesStreamProvider);
+
     return Scaffold(
       appBar: AppBar(title: const Text('My Cues')),
-      body: const Center(child: Text('List of cues will be here')),
+      body: cuesAsync.when(
+        data: (cues) {
+          if (cues.isEmpty) {
+            return const Center(child: Text('No cues yet. Create one!'));
+          }
+          return ListView.builder(
+            itemCount: cues.length,
+            itemBuilder: (context, index) {
+              final cue = cues[index];
+              return ListTile(
+                title: Text(cue.title),
+                subtitle: Text(cue.description),
+                leading: Icon(cue.audioUrl != null ? Icons.mic : Icons.text_fields),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                     // We would add delete logic here
+                     ref.read(cueRepositoryProvider).deleteCue(cue.id);
+                  },
+                ),
+              );
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Error: $err')),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
            context.push('/create-cue');
@@ -23,4 +55,10 @@ class CueListScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+@riverpod
+Stream<List<CueModel>> cuesStream(Ref ref) {
+  final repository = ref.watch(cueRepositoryProvider);
+  return repository.watchCues();
 }

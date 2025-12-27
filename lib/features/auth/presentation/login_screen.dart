@@ -74,7 +74,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const CircularProgressIndicator()
               else
                 ElevatedButton(
-                  onPressed: _submit,
+                  onPressed: () {
+                    print('Login button pressed');
+                    _submit();
+                  },
                   child: const Text('Login'),
                 ),
               TextButton(

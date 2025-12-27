@@ -83,6 +83,6 @@ class MockCueRepository implements CueRepository {
 @Riverpod(keepAlive: true)
 CueRepository cueRepository(Ref ref) {
     // Return MockCueRepository for now until Firebase is configured
-    return MockCueRepository();
-    // return FirestoreCueRepository(FirebaseFirestore.instance);
+    // return MockCueRepository();
+    return FirestoreCueRepository(FirebaseFirestore.instance);
 }
