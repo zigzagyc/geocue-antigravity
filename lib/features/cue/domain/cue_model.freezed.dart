@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CueModel {
 
- String get id; String get title; String get audioUrl;
+ String get id; String get title; String? get description; String get audioUrl; double get latitude; double get longitude; DateTime get createdAt;
 /// Create a copy of CueModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $CueModelCopyWith<CueModel> get copyWith => _$CueModelCopyWithImpl<CueModel>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CueModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.audioUrl, audioUrl) || other.audioUrl == audioUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CueModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.audioUrl, audioUrl) || other.audioUrl == audioUrl)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,audioUrl);
+int get hashCode => Object.hash(runtimeType,id,title,description,audioUrl,latitude,longitude,createdAt);
 
 @override
 String toString() {
-  return 'CueModel(id: $id, title: $title, audioUrl: $audioUrl)';
+  return 'CueModel(id: $id, title: $title, description: $description, audioUrl: $audioUrl, latitude: $latitude, longitude: $longitude, createdAt: $createdAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $CueModelCopyWith<$Res>  {
   factory $CueModelCopyWith(CueModel value, $Res Function(CueModel) _then) = _$CueModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String audioUrl
+ String id, String title, String? description, String audioUrl, double latitude, double longitude, DateTime createdAt
 });
 
 
@@ -65,12 +65,16 @@ class _$CueModelCopyWithImpl<$Res>
 
 /// Create a copy of CueModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? audioUrl = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? audioUrl = null,Object? latitude = null,Object? longitude = null,Object? createdAt = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,audioUrl: null == audioUrl ? _self.audioUrl : audioUrl // ignore: cast_nullable_to_non_nullable
-as String,
+as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,audioUrl: null == audioUrl ? _self.audioUrl : audioUrl // ignore: cast_nullable_to_non_nullable
+as String,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
   ));
 }
 
@@ -155,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String audioUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String? description,  String audioUrl,  double latitude,  double longitude,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CueModel() when $default != null:
-return $default(_that.id,_that.title,_that.audioUrl);case _:
+return $default(_that.id,_that.title,_that.description,_that.audioUrl,_that.latitude,_that.longitude,_that.createdAt);case _:
   return orElse();
 
 }
@@ -176,10 +180,10 @@ return $default(_that.id,_that.title,_that.audioUrl);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String audioUrl)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String? description,  String audioUrl,  double latitude,  double longitude,  DateTime createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _CueModel():
-return $default(_that.id,_that.title,_that.audioUrl);case _:
+return $default(_that.id,_that.title,_that.description,_that.audioUrl,_that.latitude,_that.longitude,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +200,10 @@ return $default(_that.id,_that.title,_that.audioUrl);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String audioUrl)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String? description,  String audioUrl,  double latitude,  double longitude,  DateTime createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _CueModel() when $default != null:
-return $default(_that.id,_that.title,_that.audioUrl);case _:
+return $default(_that.id,_that.title,_that.description,_that.audioUrl,_that.latitude,_that.longitude,_that.createdAt);case _:
   return null;
 
 }
@@ -211,12 +215,16 @@ return $default(_that.id,_that.title,_that.audioUrl);case _:
 @JsonSerializable()
 
 class _CueModel implements CueModel {
-  const _CueModel({required this.id, required this.title, required this.audioUrl});
+  const _CueModel({required this.id, required this.title, this.description, required this.audioUrl, required this.latitude, required this.longitude, required this.createdAt});
   factory _CueModel.fromJson(Map<String, dynamic> json) => _$CueModelFromJson(json);
 
 @override final  String id;
 @override final  String title;
+@override final  String? description;
 @override final  String audioUrl;
+@override final  double latitude;
+@override final  double longitude;
+@override final  DateTime createdAt;
 
 /// Create a copy of CueModel
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +239,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CueModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.audioUrl, audioUrl) || other.audioUrl == audioUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CueModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.audioUrl, audioUrl) || other.audioUrl == audioUrl)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,audioUrl);
+int get hashCode => Object.hash(runtimeType,id,title,description,audioUrl,latitude,longitude,createdAt);
 
 @override
 String toString() {
-  return 'CueModel(id: $id, title: $title, audioUrl: $audioUrl)';
+  return 'CueModel(id: $id, title: $title, description: $description, audioUrl: $audioUrl, latitude: $latitude, longitude: $longitude, createdAt: $createdAt)';
 }
 
 
@@ -251,7 +259,7 @@ abstract mixin class _$CueModelCopyWith<$Res> implements $CueModelCopyWith<$Res>
   factory _$CueModelCopyWith(_CueModel value, $Res Function(_CueModel) _then) = __$CueModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String audioUrl
+ String id, String title, String? description, String audioUrl, double latitude, double longitude, DateTime createdAt
 });
 
 
@@ -268,12 +276,16 @@ class __$CueModelCopyWithImpl<$Res>
 
 /// Create a copy of CueModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? audioUrl = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? audioUrl = null,Object? latitude = null,Object? longitude = null,Object? createdAt = null,}) {
   return _then(_CueModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,audioUrl: null == audioUrl ? _self.audioUrl : audioUrl // ignore: cast_nullable_to_non_nullable
-as String,
+as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,audioUrl: null == audioUrl ? _self.audioUrl : audioUrl // ignore: cast_nullable_to_non_nullable
+as String,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
   ));
 }
 

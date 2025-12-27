@@ -17,10 +17,10 @@ class MapController extends _$MapController {
     return cues.map((cue) {
       return Marker(
         markerId: MarkerId(cue.id),
-        // position: LatLng(cue.latitude, cue.longitude),
+        position: LatLng(cue.latitude, cue.longitude),
         infoWindow: InfoWindow(
           title: cue.title,
-          // snippet: cue.description,
+          snippet: cue.description,
         ),
         onTap: () {
           // Handle marker tap if needed (e.g., show mini-player or details)

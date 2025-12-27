@@ -44,6 +44,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     final markersState = ref.watch(mapControllerProvider);
     final currentCue = ref.watch(playbackServiceProvider).value;
 
+    debugPrint('MapScreen build: markersState is $markersState');
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cue Map'),
@@ -57,15 +59,42 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       body: Stack(
         children: [
           markersState.when(
-            data: (markers) => GoogleMap(
-              markers: markers,
-              initialCameraPosition: _initialCameraPosition,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-              onMapCreated: (controller) => _mapController = controller,
-            ),
+            data: (markers) {
+              debugPrint('MapScreen: showing ${markers.length} markers');
+              return Stack(
+                children: [
+                   GoogleMap(
+                    markers: markers,
+                    initialCameraPosition: _initialCameraPosition,
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: true,
+                    onMapCreated: (controller) => _mapController = controller,
+                  ),
+                  Positioned(
+                    top: 10,
+                    left: 10,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      color: Colors.black54,
+                      child: Text(
+                        'Debug: ${markers.length} markers',
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => Center(child: Text('Error loading cues: $err')),
+            error: (err, stack) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error, color: Colors.red, size: 48),
+                  Text('Error loading cues: $err'),
+                ],
+              ),
+            ),
           ),
           if (currentCue != null)
             Positioned(

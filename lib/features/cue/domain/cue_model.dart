@@ -9,7 +9,11 @@ abstract class CueModel with _$CueModel {
   const factory CueModel({
     required String id,
     required String title,
+    String? description,
     required String audioUrl,
+    required double latitude,
+    required double longitude,
+    required DateTime createdAt,
   }) = _CueModel;
 
   factory CueModel.fromJson(Map<String, dynamic> json) =>

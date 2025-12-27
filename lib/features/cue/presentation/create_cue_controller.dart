@@ -35,14 +35,12 @@ class CreateCueController extends _$CreateCueController {
       // 2. Create Cue Model
       final cue = CueModel(
         id: const Uuid().v4(),
-        // creatorId: user.uid,
         title: title,
-        // description: description,
+        description: description,
         audioUrl: audioUrl,
-        // latitude: lat,
-        // longitude: lng,
-        // language: language,
-        // createdAt: DateTime.now(),
+        latitude: lat,
+        longitude: lng,
+        createdAt: DateTime.now(),
       );
 
       // 3. Save to Repository
@@ -78,14 +76,12 @@ class CreateCueController extends _$CreateCueController {
       // 3. Create Cue Model
       final cue = CueModel(
         id: const Uuid().v4(),
-        // creatorId: user.uid,
         title: title,
-        // description: description,
+        description: description,
         audioUrl: audioUrl,
-        // latitude: lat,
-        // longitude: lng,
-        // language: language,
-        // createdAt: DateTime.now(),
+        latitude: lat,
+        longitude: lng,
+        createdAt: DateTime.now(),
       );
 
       // 4. Save to Repository

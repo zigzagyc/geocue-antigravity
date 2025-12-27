@@ -75,11 +75,19 @@ class _CreateCueScreenState extends ConsumerState<CreateCueScreen> {
       
       Position? position;
       if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
-        position = await Geolocator.getCurrentPosition();
+        debugPrint('Getting current position...');
+        position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
+          timeLimit: const Duration(seconds: 10),
+        ).catchError((e) {
+          debugPrint('Geolocator Error: $e');
+          return null;
+        });
       }
 
       final lat = position?.latitude ?? 0.0;
       final lng = position?.longitude ?? 0.0;
+      debugPrint('Position: $lat, $lng');
 
       if (_isAudioMode) {
         if (_audioPath == null) {
