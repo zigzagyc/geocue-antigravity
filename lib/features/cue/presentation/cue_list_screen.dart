@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../data/cue_repository.dart';
 import '../../cue/domain/cue_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../playback/service/playback_service.dart';
 
 part 'cue_list_screen.g.dart';
 
@@ -33,12 +34,24 @@ class CueListScreen extends ConsumerWidget {
                 title: Text(cue.title),
                 subtitle: Text(cue.description ?? ''),
                 leading: Icon(cue.audioUrl != null ? Icons.mic : Icons.text_fields),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () {
-                     // We would add delete logic here
-                     ref.read(cueRepositoryProvider).deleteCue(cue.id);
-                  },
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.play_arrow, color: Colors.green),
+                      onPressed: () {
+                        final audioUrl = cue.audioUrl;
+                        // Playback service now handles both Audio URL (Voice) and empty URL (TTS)
+                        ref.read(playbackServiceProvider.notifier).playCue(cue);
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () {
+                         ref.read(cueRepositoryProvider).deleteCue(cue.id);
+                      },
+                    ),
+                  ],
                 ),
               );
             },

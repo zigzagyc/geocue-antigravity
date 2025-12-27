@@ -32,6 +32,6 @@ class MockStorageService implements StorageService {
 @Riverpod(keepAlive: true)
 StorageService storageService(Ref ref) {
   // Return Mock for now until Firebase is setup completely
-  return MockStorageService();
-  // return FirebaseStorageService(FirebaseStorage.instance);
+  // return MockStorageService();
+  return FirebaseStorageService(FirebaseStorage.instance);
 }

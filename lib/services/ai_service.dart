@@ -13,9 +13,9 @@ abstract class AiService {
 class MockAiService implements AiService {
   @override
   Future<String> textToSpeech(String text, String language) async {
-    // Return a dummy URL or path
-    await Future.delayed(const Duration(seconds: 1));
-    return 'https://example.com/audio.mp3';
+    // Return empty string to signal UI/PlaybackService to use on-device TTS
+    await Future.delayed(const Duration(milliseconds: 100));
+    return '';
   }
 
   @override

@@ -39,15 +39,12 @@ class ProximityService extends _$ProximityService {
     for (final cue in cues) {
       if (_playedCueIds.contains(cue.id)) continue;
 
-      final distance = 100.0; // Mocked
-      /*
-      Geolocator.distanceBetween(
+      final distance = Geolocator.distanceBetween(
         position.latitude,
         position.longitude,
         cue.latitude,
         cue.longitude,
       );
-      */
 
       if (distance <= proximityThreshold) {
         _triggerPlayback(cue);
