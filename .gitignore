@@ -78,3 +78,4 @@ ios/Flutter/Config.xcconfig
 *.msi
 *.msix
 *.obj
+ios/Podfile.lock
