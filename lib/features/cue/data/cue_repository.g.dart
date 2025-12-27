@@ -48,4 +48,4 @@ final class CueRepositoryProvider
   }
 }
 
-String _$cueRepositoryHash() => r'c15bd95f5613556bff9ad467c881240a50a33676';
+String _$cueRepositoryHash() => r'9f8eedda07440a349a93aa50717766e0aa1c5123';

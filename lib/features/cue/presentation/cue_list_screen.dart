@@ -31,7 +31,7 @@ class CueListScreen extends ConsumerWidget {
               final cue = cues[index];
               return ListTile(
                 title: Text(cue.title),
-                subtitle: Text(cue.description),
+                // subtitle: Text(cue.description),
                 leading: Icon(cue.audioUrl != null ? Icons.mic : Icons.text_fields),
                 trailing: IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
