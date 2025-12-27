@@ -10,6 +10,10 @@ class PlaybackService extends _$PlaybackService {
   final AudioPlayer _player = AudioPlayer();
   final FlutterTts _tts = FlutterTts();
   
+// Queue to hold cues waiting to be played
+  final List<CueModel> _queue = [];
+  bool _isPlaying = false;
+
   @override
   FutureOr<CueModel?> build() async {
     // Configure TTS for iOS
@@ -21,6 +25,18 @@ class PlaybackService extends _$PlaybackService {
       IosTextToSpeechAudioCategoryOptions.mixWithOthers,
     ]);
     await _tts.awaitSpeakCompletion(true);
+    
+    // Set up completion handlers
+    _tts.setCompletionHandler(() {
+      _onPlaybackCompleted();
+    });
+    
+    // Listen for audio player completion
+    _player.playerStateStream.listen((playerState) {
+      if (playerState.processingState == ProcessingState.completed) {
+        _onPlaybackCompleted();
+      }
+    });
 
     ref.onDispose(() {
       _player.dispose();
@@ -30,11 +46,18 @@ class PlaybackService extends _$PlaybackService {
   }
 
   Future<void> playCue(CueModel cue) async {
-    try {
-      state = AsyncValue.data(cue);
-      // Stop any previous playback
-      await stop();
+    _queue.add(cue);
+    _processQueue();
+  }
 
+  Future<void> _processQueue() async {
+    if (_isPlaying || _queue.isEmpty) return;
+    
+    _isPlaying = true;
+    final cue = _queue.removeAt(0);
+    state = AsyncValue.data(cue);
+    
+    try {
       if (cue.audioUrl.isNotEmpty) {
         // Voice Cue
         await _player.setUrl(cue.audioUrl);
@@ -45,7 +68,14 @@ class PlaybackService extends _$PlaybackService {
       }
     } catch (e) {
       print('Playback Error: $e');
+      _onPlaybackCompleted(); // Ensure queue continues even on error
     }
+  }
+
+  void _onPlaybackCompleted() {
+    _isPlaying = false;
+    state = const AsyncValue.data(null);
+    _processQueue();
   }
 
   Future<void> pause() async {
@@ -54,6 +84,8 @@ class PlaybackService extends _$PlaybackService {
   }
 
   Future<void> stop() async {
+    _queue.clear(); // Clear queue on stop
+    _isPlaying = false;
     await _player.stop();
     await _tts.stop();
     state = const AsyncValue.data(null);

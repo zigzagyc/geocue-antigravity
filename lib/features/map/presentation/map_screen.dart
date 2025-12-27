@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geocue/features/map/presentation/map_controller.dart';
 import 'package:geocue/features/playback/service/proximity_service.dart';
 import 'package:geocue/features/playback/service/playback_service.dart';
+import 'package:geocue/features/auth/presentation/auth_controller.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
@@ -16,8 +18,8 @@ class MapScreen extends ConsumerStatefulWidget {
 }
 
 class _MapScreenState extends ConsumerState<MapScreen> {
-  static const _initialCameraPosition = CameraPosition(
-    target: LatLng(37.7749, -122.4194), // Example: San Francisco
+  CameraPosition _initialCameraPosition = const CameraPosition(
+    target: LatLng(37.7749, -122.4194), // Default: San Francisco
     zoom: 12,
   );
 
@@ -26,15 +28,39 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   @override
   void initState() {
     super.initState();
+    _loadSavedLocation();
     _requestLocationPermission();
+  }
+
+  Future<void> _loadSavedLocation() async {
+    final prefs = await SharedPreferences.getInstance();
+    final lat = prefs.getDouble('last_map_lat');
+    final lng = prefs.getDouble('last_map_lng');
+    final zoom = prefs.getDouble('last_map_zoom');
+
+    if (lat != null && lng != null && zoom != null) {
+      setState(() {
+        _initialCameraPosition = CameraPosition(
+          target: LatLng(lat, lng),
+          zoom: zoom,
+        );
+      });
+      // If controller is already available, move camera
+      _mapController?.moveCamera(CameraUpdate.newCameraPosition(_initialCameraPosition));
+    }
+  }
+
+  Future<void> _saveLocation(CameraPosition position) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('last_map_lat', position.target.latitude);
+    await prefs.setDouble('last_map_lng', position.target.longitude);
+    await prefs.setDouble('last_map_zoom', position.zoom);
   }
 
   Future<void> _requestLocationPermission() async {
     final status = await Permission.location.request();
     if (status.isGranted) {
-      // Check if widget is still mounted before using ref
       if (!mounted) return;
-      // Start monitoring proximity only if permission granted
       ref.read(proximityServiceProvider.notifier).startMonitoring();
     }
   }
@@ -44,8 +70,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     final markersState = ref.watch(mapControllerProvider);
     final currentCue = ref.watch(playbackServiceProvider).value;
 
-    debugPrint('MapScreen build: markersState is $markersState');
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cue Map'),
@@ -54,13 +78,21 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(mapControllerProvider.notifier).refreshCues(),
           ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await ref.read(authControllerProvider.notifier).signOut();
+              if (context.mounted) {
+                 context.go('/login'); // Assuming '/login' is the route name
+              }
+            },
+          ),
         ],
       ),
       body: Stack(
         children: [
           markersState.when(
             data: (markers) {
-              debugPrint('MapScreen: showing ${markers.length} markers');
               return Stack(
                 children: [
                    GoogleMap(
@@ -69,7 +101,17 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                     myLocationEnabled: true,
                     myLocationButtonEnabled: false,
                     zoomControlsEnabled: false,
-                    onMapCreated: (controller) => _mapController = controller,
+                    onMapCreated: (controller) {
+                       _mapController = controller;
+                        // Move to saved position if it was loaded after map creation
+                       _mapController!.moveCamera(CameraUpdate.newCameraPosition(_initialCameraPosition));
+                    },
+                    onCameraMove: (position) {
+                      _initialCameraPosition = position;
+                    },
+                    onCameraIdle: () {
+                       _saveLocation(_initialCameraPosition);
+                    },
                   ),
                   Positioned(
                     top: 10,
