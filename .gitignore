@@ -67,7 +67,7 @@ firebase.exe
 firebase-win.exe
 
 # Keys and Secrets
-lib/firebase_options.dart
+
 ios/Flutter/Config.xcconfig
 .env*
 
