@@ -22,11 +22,13 @@ class ProximityService extends _$ProximityService {
   }
 
   void startMonitoring() {
+    print('ProximityService: startMonitoring called. Subscription exists: ${_positionSubscription != null}');
     if (_positionSubscription != null) return;
 
     LocationSettings locationSettings;
     
     if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
+      print('ProximityService: Using AppleSettings');
       locationSettings = AppleSettings(
         accuracy: LocationAccuracy.high,
         activityType: ActivityType.fitness,
@@ -36,6 +38,7 @@ class ProximityService extends _$ProximityService {
         allowBackgroundLocationUpdates: true,
       );
     } else {
+      print('ProximityService: Using standard LocationSettings');
       locationSettings = const LocationSettings(
         accuracy: LocationAccuracy.high,
         distanceFilter: 10,
@@ -43,16 +46,22 @@ class ProximityService extends _$ProximityService {
     }
 
     // Immediate check on startup
+    print('ProximityService: Getting initial position...');
     Geolocator.getCurrentPosition().then((position) {
+      print('ProximityService: Initial position received: ${position.latitude}, ${position.longitude}');
       _checkProximity(position);
     }).catchError((e) {
       print('Error getting initial position: $e');
     });
 
+    print('ProximityService: Subscribing to position stream...');
     _positionSubscription = Geolocator.getPositionStream(
       locationSettings: locationSettings,
     ).listen((position) {
+      print('ProximityService: Stream position update: ${position.latitude}, ${position.longitude}');
       _checkProximity(position);
+    }, onError: (e) {
+      print('ProximityService: Stream Error: $e');
     });
   }
 
@@ -69,13 +78,20 @@ class ProximityService extends _$ProximityService {
         cue.longitude,
       );
 
+      print('Proximity Check: ${cue.title} is ${distance.toStringAsFixed(1)}m away (Threshold: $proximityThreshold)');
+
       if (distance <= proximityThreshold) {
+        print('!!! TRIGGERING PLAYBACK for ${cue.title} !!!');
         _triggerPlayback(cue);
       }
     }
   }
 
   void _triggerPlayback(CueModel cue) {
+    if (_playedCueIds.contains(cue.id)) {
+        print('Skipping ${cue.title}, already played.');
+        return;
+    }
     _playedCueIds.add(cue.id);
     ref.read(playbackServiceProvider.notifier).playCue(cue);
   }

@@ -17,19 +17,35 @@ class MapScreen extends ConsumerStatefulWidget {
   ConsumerState<MapScreen> createState() => _MapScreenState();
 }
 
-class _MapScreenState extends ConsumerState<MapScreen> {
+class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserver {
   CameraPosition _initialCameraPosition = const CameraPosition(
     target: LatLng(37.7749, -122.4194), // Default: San Francisco
     zoom: 12,
   );
 
   GoogleMapController? _mapController;
+  bool _isCheckingPermission = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadSavedLocation();
     _requestLocationPermission();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      print('App resumed. Re-checking location permissions...');
+      _requestLocationPermission();
+    }
   }
 
   Future<void> _loadSavedLocation() async {
@@ -58,16 +74,60 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   Future<void> _requestLocationPermission() async {
-    // First request "When In Use"
-    final status = await Permission.locationWhenInUse.request();
-    
-    if (status.isGranted) {
-      // Then try to upgrade to "Always" for background playback
-      // On iOS, this might prompt the user or fail silently if already determined
-      await Permission.locationAlways.request();
+    if (_isCheckingPermission) return;
+    _isCheckingPermission = true;
+
+    try {
+      print('Requesting LocationWhenInUse permission...');
+      var status = await Permission.locationWhenInUse.status;
       
-      if (!mounted) return;
-      ref.read(proximityServiceProvider.notifier).startMonitoring();
+      if (!status.isGranted) {
+        status = await Permission.locationWhenInUse.request();
+      }
+      print('LocationWhenInUse status: $status');
+      
+      if (!status.isGranted) {
+        print('Location permission denied/permanently denied. Prompting user...');
+        if (!mounted) return;
+        
+        // Show dialog to explain why we need permissions
+        final openSettings = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Location Permission Required'),
+            content: const Text(
+              'Location permission is required to show your position and play cues automatically. '
+              'Please enable "Always Allow" or "While Using the App" in Settings.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Open Settings'),
+              ),
+            ],
+          ),
+        );
+
+        if (openSettings == true) {
+          await openAppSettings();
+        }
+      } else {
+        // Granted!
+        // Then try to upgrade to "Always" for background playback
+        print('Requesting LocationAlways permission...');
+        final alwaysStatus = await Permission.locationAlways.request();
+        print('LocationAlways status: $alwaysStatus');
+        
+        if (!mounted) return;
+        print('Starting proximity monitoring...');
+        ref.read(proximityServiceProvider.notifier).startMonitoring();
+      }
+    } finally {
+      _isCheckingPermission = false;
     }
   }
 
