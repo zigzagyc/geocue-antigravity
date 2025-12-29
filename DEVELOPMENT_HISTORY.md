@@ -14,6 +14,25 @@ When collaborating on this project from other machines:
 
 ## Log Entries
 
+### Dec 28, 2025: Automating History Log
+**User Vibe (Prompt):** "make sure you change the DEVELOPMENT_HISTORY.md automatically after every prompt"
+
+**Agent Action (Plan):**
+*   **Protocol:** Established a new workflow rule to update this `DEVELOPMENT_HISTORY.md` file at the end of every significant interaction to ensure a continuous "Vibe" trail.
+
+### Dec 28, 2025: iPhone 13 Deployment
+**User Vibe (Prompt):** "run the iOS version on iphone 13"
+
+**Agent Action (Plan):**
+*   **Execution:** Triggered `flutter run` targeting the user's specific iPhone 13 device.
+
+### Dec 28, 2025: iOS Auto-Playback Fix
+**User Vibe (Prompt):** "iOS seems failed to play the sound automatically..."
+
+**Agent Action (Plan):**
+*   **Permissions:** Added `NSLocationAlwaysAndWhenInUseUsageDescription` to `Info.plist` to authorize background location access.
+*   **Logic:** Updated `ProximityService` to use `AppleSettings` with `allowBackgroundLocationUpdates: true` and `showBackgroundLocationIndicator: true` to ensure the app keeps tracking location (and playing audio) even when locked or in the background.
+
 ### Dec 28, 2025: Science Fair Submission Prep
 **User Vibe (Prompt):** "I will submit this program to a local science fair, can you write an abstract for me? ... highlight the use of antigravity to do AI/Agent/vibe coding as well? ... build a document to show people how this software is being developed?"
 
