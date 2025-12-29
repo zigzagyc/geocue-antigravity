@@ -33,6 +33,13 @@ When collaborating on this project from other machines:
 *   **Permissions:** Added `NSLocationAlwaysAndWhenInUseUsageDescription` to `Info.plist` to authorize background location access.
 *   **Logic:** Updated `ProximityService` to use `AppleSettings` with `allowBackgroundLocationUpdates: true` and `showBackgroundLocationIndicator: true` to ensure the app keeps tracking location (and playing audio) even when locked or in the background.
 
+### Dec 28, 2025: iOS Startup Playback Fix
+**User Vibe (Prompt):** "I still did not hear the auto playback on ios startup"
+
+**Agent Action (Plan):**
+*   **Initialization:** Modified `ProximityService` to force an immediate `Geolocator.getCurrentPosition()` check upon `startMonitoring()`. This ensures that if the user opens the app while *already* at a cue location, playback triggers immediately without waiting for a movement event.
+*   **Permissions:** Updated `MapScreen` to explicitly request `Permission.locationAlways` (upgrading from "When In Use") to guarantee background monitoring capabilities.
+
 ### Dec 28, 2025: Science Fair Submission Prep
 **User Vibe (Prompt):** "I will submit this program to a local science fair, can you write an abstract for me? ... highlight the use of antigravity to do AI/Agent/vibe coding as well? ... build a document to show people how this software is being developed?"
 

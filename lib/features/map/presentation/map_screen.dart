@@ -58,8 +58,14 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   Future<void> _requestLocationPermission() async {
-    final status = await Permission.location.request();
+    // First request "When In Use"
+    final status = await Permission.locationWhenInUse.request();
+    
     if (status.isGranted) {
+      // Then try to upgrade to "Always" for background playback
+      // On iOS, this might prompt the user or fail silently if already determined
+      await Permission.locationAlways.request();
+      
       if (!mounted) return;
       ref.read(proximityServiceProvider.notifier).startMonitoring();
     }

@@ -42,6 +42,13 @@ class ProximityService extends _$ProximityService {
       );
     }
 
+    // Immediate check on startup
+    Geolocator.getCurrentPosition().then((position) {
+      _checkProximity(position);
+    }).catchError((e) {
+      print('Error getting initial position: $e');
+    });
+
     _positionSubscription = Geolocator.getPositionStream(
       locationSettings: locationSettings,
     ).listen((position) {
