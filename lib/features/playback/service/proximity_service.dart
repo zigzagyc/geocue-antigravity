@@ -67,7 +67,9 @@ class ProximityService extends _$ProximityService {
 
   Future<void> _checkProximity(Position position) async {
     final cues = await ref.read(cueRepositoryProvider).getCues();
+    final List<CueModel> cuesInRange = [];
     
+    // 1. Collect all cues currently in range that haven't been played
     for (final cue in cues) {
       if (_playedCueIds.contains(cue.id)) continue;
 
@@ -81,8 +83,25 @@ class ProximityService extends _$ProximityService {
       print('Proximity Check: ${cue.title} is ${distance.toStringAsFixed(1)}m away (Threshold: $proximityThreshold)');
 
       if (distance <= proximityThreshold) {
-        print('!!! TRIGGERING PLAYBACK for ${cue.title} !!!');
-        _triggerPlayback(cue);
+        cuesInRange.add(cue);
+      }
+    }
+
+    if (cuesInRange.isEmpty) return;
+
+    // 2. Sort by creation time (descending: newest first)
+    cuesInRange.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    // 3. Play ONLY the most recent one
+    final newestCue = cuesInRange.first;
+    _triggerPlayback(newestCue);
+
+    // 4. Mark ALL detected cues as "played/visited" so they don't trigger 
+    // immediately after if the user stays in the zone.
+    for (final cue in cuesInRange) {
+      if (cue.id != newestCue.id) {
+        _playedCueIds.add(cue.id);
+        print('Skipping older cue: ${cue.title} (${cue.id}) in favor of ${newestCue.title}');
       }
     }
   }
