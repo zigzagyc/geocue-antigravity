@@ -23,6 +23,9 @@ class CreateCueController extends _$CreateCueController {
     required String language,
     required double lat,
     required double lng,
+    double radius = 50.0,
+    String zoneType = 'circle',
+    List<Map<String, double>>? polygonPoints,
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
@@ -41,6 +44,9 @@ class CreateCueController extends _$CreateCueController {
         latitude: lat,
         longitude: lng,
         createdAt: DateTime.now(),
+        radius: radius,
+        zoneType: zoneType,
+        polygonPoints: polygonPoints,
       );
 
       // 3. Save to Repository
@@ -55,6 +61,9 @@ class CreateCueController extends _$CreateCueController {
     required String language,
     required double lat,
     required double lng,
+    double radius = 50.0,
+    String zoneType = 'circle',
+    List<Map<String, double>>? polygonPoints,
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
@@ -70,10 +79,7 @@ class CreateCueController extends _$CreateCueController {
         storagePath,
       );
 
-      // 2. Transcribe Audio (Optional / for metadata)
-      // final textContent = await ref.read(aiServiceProvider).speechToText(audioFilePath, language);
-
-      // 3. Create Cue Model
+      // 2. Create Cue Model
       final cue = CueModel(
         id: const Uuid().v4(),
         title: title,
@@ -82,6 +88,9 @@ class CreateCueController extends _$CreateCueController {
         latitude: lat,
         longitude: lng,
         createdAt: DateTime.now(),
+        radius: radius,
+        zoneType: zoneType,
+        polygonPoints: polygonPoints,
       );
 
       // 4. Save to Repository

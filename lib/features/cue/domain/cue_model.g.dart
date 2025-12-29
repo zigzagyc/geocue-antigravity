@@ -14,6 +14,15 @@ _CueModel _$CueModelFromJson(Map<String, dynamic> json) => _CueModel(
   latitude: (json['latitude'] as num).toDouble(),
   longitude: (json['longitude'] as num).toDouble(),
   createdAt: DateTime.parse(json['createdAt'] as String),
+  radius: (json['radius'] as num?)?.toDouble() ?? 50.0,
+  zoneType: json['zoneType'] as String? ?? 'circle',
+  polygonPoints: (json['polygonPoints'] as List<dynamic>?)
+      ?.map(
+        (e) => (e as Map<String, dynamic>).map(
+          (k, e) => MapEntry(k, (e as num).toDouble()),
+        ),
+      )
+      .toList(),
 );
 
 Map<String, dynamic> _$CueModelToJson(_CueModel instance) => <String, dynamic>{
@@ -24,4 +33,7 @@ Map<String, dynamic> _$CueModelToJson(_CueModel instance) => <String, dynamic>{
   'latitude': instance.latitude,
   'longitude': instance.longitude,
   'createdAt': instance.createdAt.toIso8601String(),
+  'radius': instance.radius,
+  'zoneType': instance.zoneType,
+  'polygonPoints': instance.polygonPoints,
 };

@@ -73,16 +73,26 @@ class ProximityService extends _$ProximityService {
     for (final cue in cues) {
       if (_playedCueIds.contains(cue.id)) continue;
 
-      final distance = Geolocator.distanceBetween(
-        position.latitude,
-        position.longitude,
-        cue.latitude,
-        cue.longitude,
-      );
+      bool isInRange = false;
 
-      print('Proximity Check: ${cue.title} is ${distance.toStringAsFixed(1)}m away (Threshold: $proximityThreshold)');
+      if (cue.zoneType == 'polygon' && cue.polygonPoints != null && cue.polygonPoints!.isNotEmpty) {
+        isInRange = _isPointInPolygon(
+          position.latitude, 
+          position.longitude, 
+          cue.polygonPoints!
+        );
+      } else {
+        // Default to circle (or fallback if polygon data missing)
+        final distance = Geolocator.distanceBetween(
+          position.latitude,
+          position.longitude,
+          cue.latitude,
+          cue.longitude,
+        );
+        isInRange = distance <= (cue.radius > 0 ? cue.radius : ProximityService.proximityThreshold);
+      }
 
-      if (distance <= proximityThreshold) {
+      if (isInRange) {
         cuesInRange.add(cue);
       }
     }
@@ -104,6 +114,22 @@ class ProximityService extends _$ProximityService {
         print('Skipping older cue: ${cue.title} (${cue.id}) in favor of ${newestCue.title}');
       }
     }
+  }
+
+  // Ray Casting Algorithm to check if point is in polygon
+  bool _isPointInPolygon(double lat, double lng, List<Map<String, double>> polygon) {
+    bool inside = false;
+    for (int i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      final xi = polygon[i]['lat']!;
+      final yi = polygon[i]['lng']!;
+      final xj = polygon[j]['lat']!;
+      final yj = polygon[j]['lng']!;
+
+      final intersect = ((yi > lng) != (yj > lng)) &&
+          (lat < (xj - xi) * (lng - yi) / (yj - yi) + xi);
+      if (intersect) inside = !inside;
+    }
+    return inside;
   }
 
   void _triggerPlayback(CueModel cue) {

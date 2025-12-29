@@ -5,7 +5,8 @@ import 'package:record/record.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import 'create_cue_controller.dart'; 
+import 'create_cue_controller.dart';
+import 'widgets/zone_selector.dart';
 
 class CreateCueScreen extends ConsumerStatefulWidget {
   const CreateCueScreen({super.key});
@@ -16,12 +17,56 @@ class CreateCueScreen extends ConsumerStatefulWidget {
 
 class _CreateCueScreenState extends ConsumerState<CreateCueScreen> {
   final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController(); 
+  final _descriptionController = TextEditingController();
   
   final _audioRecorder = AudioRecorder();
   bool _isRecording = false;
   String? _audioPath;
   bool _isAudioMode = false;
+
+  // Location & Zone State
+  Position? _currentPosition;
+  bool _isLoadingLocation = true;
+  double _radius = 50.0;
+  String _zoneType = 'circle';
+  List<Map<String, double>>? _polygonPoints;
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      
+      if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+        final position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
+        );
+        if (mounted) {
+          setState(() {
+            _currentPosition = position;
+            _isLoadingLocation = false;
+          });
+        }
+      } else {
+        if (mounted) {
+           setState(() => _isLoadingLocation = false);
+           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Location permission denied')));
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoadingLocation = false);
+        debugPrint('Error getting location: $e');
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -65,29 +110,21 @@ class _CreateCueScreenState extends ConsumerState<CreateCueScreen> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Title is required')));
       return;
     }
+    
+    if (_currentPosition == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Location not available')));
+      return;
+    }
+
+    // specific validation for polygon
+    if (_zoneType == 'polygon' && (_polygonPoints == null || _polygonPoints!.length < 3)) {
+       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please draw a valid polygon zone (3+ points)')));
+       return;
+    }
 
     try {
-      // 1. Get Location
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      
-      Position? position;
-      if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
-        debugPrint('Getting current position...');
-        position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
-          timeLimit: const Duration(seconds: 10),
-        ).catchError((e) {
-          debugPrint('Geolocator Error: $e');
-          return null;
-        });
-      }
-
-      final lat = position?.latitude ?? 0.0;
-      final lng = position?.longitude ?? 0.0;
-      debugPrint('Position: $lat, $lng');
+      final lat = _currentPosition!.latitude;
+      final lng = _currentPosition!.longitude;
 
       if (_isAudioMode) {
         if (_audioPath == null) {
@@ -101,6 +138,9 @@ class _CreateCueScreenState extends ConsumerState<CreateCueScreen> {
           language: 'en',
           lat: lat,
           lng: lng,
+          radius: _radius,
+          zoneType: _zoneType,
+          polygonPoints: _polygonPoints,
         );
       } else {
         if (_descriptionController.text.isEmpty) {
@@ -114,6 +154,9 @@ class _CreateCueScreenState extends ConsumerState<CreateCueScreen> {
           language: 'en',
           lat: lat,
           lng: lng,
+          radius: _radius,
+          zoneType: _zoneType,
+          polygonPoints: _polygonPoints,
         );
       }
     } catch (e) {
@@ -135,6 +178,31 @@ class _CreateCueScreenState extends ConsumerState<CreateCueScreen> {
 
     final state = ref.watch(createCueControllerProvider);
     final isLoading = state.isLoading;
+
+    if (_isLoadingLocation) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // Only allow creation if we have location
+    if (_currentPosition == null) {
+       return Scaffold(
+         appBar: AppBar(title: const Text('Create New Cue')),
+         body: Center(
+           child: Column(
+             mainAxisAlignment: MainAxisAlignment.center,
+             children: [
+               const Text('Location needed to place cue.'),
+               ElevatedButton(
+                 onPressed: _getCurrentLocation,
+                 child: const Text('Retry Location'),
+               )
+             ],
+           ),
+         ),
+       );
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Create New Cue')),
@@ -210,6 +278,21 @@ class _CreateCueScreenState extends ConsumerState<CreateCueScreen> {
                ),
              ],
              
+             const SizedBox(height: 24),
+             const Text('Playback Zone', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+             const SizedBox(height: 8),
+             ZoneSelector(
+               initialLat: _currentPosition!.latitude,
+               initialLng: _currentPosition!.longitude,
+               onZoneChanged: (radius, type, points) {
+                 setState(() {
+                   _radius = radius;
+                   _zoneType = type;
+                   _polygonPoints = points;
+                 });
+               },
+             ),
+
              const SizedBox(height: 24),
              
              ElevatedButton(

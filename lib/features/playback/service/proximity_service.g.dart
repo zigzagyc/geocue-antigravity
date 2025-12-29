@@ -41,7 +41,7 @@ final class ProximityServiceProvider
   }
 }
 
-String _$proximityServiceHash() => r'63163a7a9d91fe2a8f036036db87a3a4acf9573f';
+String _$proximityServiceHash() => r'392e0d2b1f3cda016e223e1063f7c9318cf18d42';
 
 abstract class _$ProximityService extends $Notifier<void> {
   void build();

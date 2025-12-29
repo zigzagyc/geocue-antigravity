@@ -14,6 +14,9 @@ abstract class CueModel with _$CueModel {
     required double latitude,
     required double longitude,
     required DateTime createdAt,
+    @Default(50.0) double radius,
+    @Default('circle') String zoneType, // 'circle' or 'polygon'
+    List<Map<String, double>>? polygonPoints,
   }) = _CueModel;
 
   factory CueModel.fromJson(Map<String, dynamic> json) =>
