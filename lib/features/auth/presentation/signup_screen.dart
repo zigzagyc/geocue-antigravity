@@ -47,7 +47,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           SnackBar(content: Text(state.error.toString())),
         );
       }
+      if (!state.isLoading && !state.hasError) { context.go('/'); }
     });
+
 
     final state = ref.watch(authControllerProvider);
 

@@ -41,8 +41,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
       // Success is handled by auth state changes redirecting in router usually,
       // but if we want manual navigation:
-      // if (!state.isLoading && !state.hasError) { context.go('/'); }
+      if (!state.isLoading && !state.hasError) { context.go('/'); }
     });
+
 
     final state = ref.watch(authControllerProvider);
 
