@@ -60,7 +60,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '773637258020',
     projectId: 'geocue-antigravity',
     storageBucket: 'geocue-antigravity.firebasestorage.app',
-    iosBundleId: 'com.geocue.geocue',
+    iosBundleId: 'com.hearhere.hearhere',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -69,6 +69,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '773637258020',
     projectId: 'geocue-antigravity',
     storageBucket: 'geocue-antigravity.firebasestorage.app',
-    iosBundleId: 'com.geocue.geocue',
+    iosBundleId: 'com.hearhere.hearhere',
   );
 }

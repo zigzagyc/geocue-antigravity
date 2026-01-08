@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:geocue/features/cue/domain/cue_model.dart';
+import 'package:hearhere/features/cue/domain/cue_model.dart';
 
 part 'playback_service.g.dart';
 

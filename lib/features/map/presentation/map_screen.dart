@@ -5,10 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:geocue/features/map/presentation/map_controller.dart';
-import 'package:geocue/features/playback/service/proximity_service.dart';
-import 'package:geocue/features/playback/service/playback_service.dart';
-import 'package:geocue/features/auth/presentation/auth_controller.dart';
+import 'package:hearhere/features/map/presentation/map_controller.dart';
+import 'package:hearhere/features/playback/service/proximity_service.dart';
+import 'package:hearhere/features/playback/service/playback_service.dart';
+import 'package:hearhere/features/auth/presentation/auth_controller.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});

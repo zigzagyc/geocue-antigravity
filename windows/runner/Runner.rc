@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.geocue" "\0"
-            VALUE "FileDescription", "geocue" "\0"
+            VALUE "CompanyName", "com.hearhere" "\0"
+            VALUE "FileDescription", "HearHere" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "geocue" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2025 com.geocue. All rights reserved." "\0"
-            VALUE "OriginalFilename", "geocue.exe" "\0"
-            VALUE "ProductName", "geocue" "\0"
+            VALUE "InternalName", "HearHere" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 com.hearhere. All rights reserved." "\0"
+            VALUE "OriginalFilename", "hearhere.exe" "\0"
+            VALUE "ProductName", "HearHere" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

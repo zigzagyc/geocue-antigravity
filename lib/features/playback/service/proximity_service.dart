@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:geocue/features/cue/data/cue_repository.dart';
-import 'package:geocue/features/cue/domain/cue_model.dart';
-import 'package:geocue/features/playback/service/playback_service.dart';
+import 'package:hearhere/features/cue/data/cue_repository.dart';
+import 'package:hearhere/features/cue/domain/cue_model.dart';
+import 'package:hearhere/features/playback/service/playback_service.dart';
 
 part 'proximity_service.g.dart';
 

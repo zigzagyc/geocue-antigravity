@@ -1,4 +1,4 @@
-package com.geocue.geocue
+package com.hearhere.hearhere
 
 import io.flutter.embedding.android.FlutterActivity
 

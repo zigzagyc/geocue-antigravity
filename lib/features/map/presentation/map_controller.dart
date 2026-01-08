@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geocue/features/cue/data/cue_repository.dart';
-import 'package:geocue/features/cue/domain/cue_model.dart';
+import 'package:hearhere/features/cue/data/cue_repository.dart';
+import 'package:hearhere/features/cue/domain/cue_model.dart';
 
 part 'map_controller.g.dart';
 

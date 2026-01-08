@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:773637258020:android:d9a7fec22a2d4f0ec091b1",
         "android_client_info": {
-          "package_name": "com.geocue.geocue"
+          "package_name": "com.hearhere.hearhere"
         }
       },
       "oauth_client": [
@@ -35,7 +35,7 @@
               "client_id": "773637258020-bsqmjv9arh7iqi7bdtag19ge1c35jhtn.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.geocue.geocue"
+                "bundle_id": "com.hearhere.hearhere"
               }
             }
           ]

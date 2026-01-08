@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:geocue/features/cue/domain/cue_privacy.dart';
+import 'package:hearhere/features/cue/domain/cue_privacy.dart';
 
 part 'cue_model.freezed.dart';
 part 'cue_model.g.dart';

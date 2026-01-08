@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:geocue/features/cue/domain/cue_model.dart';
+import 'package:hearhere/features/cue/domain/cue_model.dart';
 
 part 'cue_repository.g.dart';
 

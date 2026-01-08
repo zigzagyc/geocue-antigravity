@@ -1,6 +1,6 @@
 # Development History & Agent Prompt Log
 
-This document records the "Vibe Coding" history of the **GeoCue** project. It serves as a log of high-level user requests and the corresponding architectural changes and implementation steps performed by the **Antigravity** AI agent.
+This document records the "Vibe Coding" history of the **HearHere** project. It serves as a log of high-level user requests and the corresponding architectural changes and implementation steps performed by the **Antigravity** AI agent.
 
 Use this log to track how the software evolved from initial infrastructure to a release-ready science fair project.
 

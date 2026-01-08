@@ -1,9 +1,9 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:geocue/features/cue/data/cue_repository.dart';
-import 'package:geocue/features/cue/domain/cue_model.dart';
-import 'package:geocue/features/auth/data/auth_repository.dart';
-import 'package:geocue/services/ai_service.dart';
-import 'package:geocue/services/storage_service.dart';
+import 'package:hearhere/features/cue/data/cue_repository.dart';
+import 'package:hearhere/features/cue/domain/cue_model.dart';
+import 'package:hearhere/features/auth/data/auth_repository.dart';
+import 'package:hearhere/services/ai_service.dart';
+import 'package:hearhere/services/storage_service.dart';
 import 'dart:io';
 import 'package:uuid/uuid.dart';
 

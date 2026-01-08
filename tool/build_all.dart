@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:path/path.dart' as p;
 
-const String appName = 'geocue';
+const String appName = 'hearhere';
 
 void main() async {
   final distDir = Directory('dist');
@@ -186,7 +186,7 @@ void _generateOTAFiles(Directory dir, String ipaName) {
 			<key>metadata</key>
 			<dict>
 				<key>bundle-identifier</key>
-				<string>com.geocue.geocue</string>
+				<string>com.hearhere.hearhere</string>
 				<key>bundle-version</key>
 				<string>1.0.0</string>
 				<key>kind</key>
