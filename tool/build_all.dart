@@ -5,12 +5,12 @@ import 'package:path/path.dart' as p;
 const String appName = 'geocue';
 
 void main() async {
-  final distDir = Directory('dist');
+  final distDir = Directory('dist/PAC');
   if (distDir.existsSync()) {
-    print('Cleaning dist directory...');
+    print('Cleaning dist/PAC directory...');
     distDir.deleteSync(recursive: true);
   }
-  distDir.createSync();
+  distDir.createSync(recursive: true);
 
   print('Starting comprehensive release build for $appName...');
 

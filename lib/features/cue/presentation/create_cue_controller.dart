@@ -97,4 +97,88 @@ class CreateCueController extends _$CreateCueController {
       await ref.read(cueRepositoryProvider).createCue(cue);
     });
   }
+  Future<void> updateCueFromText({
+    required String cueId,
+    required String title,
+    required String description,
+    required String textContent,
+    required String language,
+    required DateTime createdAt,
+    required double lat,
+    required double lng,
+    double radius = 50.0,
+    String zoneType = 'circle',
+    List<Map<String, double>>? polygonPoints,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final user = ref.read(authRepositoryProvider).currentUser;
+      if (user == null) throw Exception('User not logged in');
+
+      final audioUrl = await ref.read(aiServiceProvider).textToSpeech(textContent, language);
+
+      final cue = CueModel(
+        id: cueId,
+        title: title,
+        description: description,
+        audioUrl: audioUrl,
+        latitude: lat,
+        longitude: lng,
+        createdAt: createdAt, 
+        radius: radius,
+        zoneType: zoneType,
+        polygonPoints: polygonPoints,
+      );
+
+      await ref.read(cueRepositoryProvider).updateCue(cue);
+    });
+  }
+
+  Future<void> updateCueFromAudio({
+    required String cueId,
+    required String title,
+    required String description,
+    String? newAudioFilePath,
+    required String originalAudioUrl,
+    required DateTime createdAt,
+    required String language,
+    required double lat,
+    required double lng,
+    double radius = 50.0,
+    String zoneType = 'circle',
+    List<Map<String, double>>? polygonPoints,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final user = ref.read(authRepositoryProvider).currentUser;
+      if (user == null) throw Exception('User not logged in');
+
+      String audioUrl = originalAudioUrl;
+
+      if (newAudioFilePath != null) {
+        final fileName = '${const Uuid().v4()}.m4a';
+        final storagePath = 'users/${user.uid}/cues/$fileName';
+        
+        audioUrl = await ref.read(storageServiceProvider).uploadFile(
+          File(newAudioFilePath),
+          storagePath,
+        );
+      }
+
+      final cue = CueModel(
+        id: cueId,
+        title: title,
+        description: description,
+        audioUrl: audioUrl,
+        latitude: lat,
+        longitude: lng,
+        createdAt: createdAt,
+        radius: radius,
+        zoneType: zoneType,
+        polygonPoints: polygonPoints,
+      );
+
+      await ref.read(cueRepositoryProvider).updateCue(cue);
+    });
+  }
 }

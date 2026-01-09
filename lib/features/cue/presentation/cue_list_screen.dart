@@ -46,6 +46,12 @@ class CueListScreen extends ConsumerWidget {
                       },
                     ),
                     IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () {
+                          context.push('/edit-cue', extra: cue);
+                        },
+                    ),
+                    IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () {
                          ref.read(cueRepositoryProvider).deleteCue(cue.id);

@@ -7,6 +7,8 @@ import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/signup_screen.dart';
 import '../features/auth/presentation/splash_screen.dart';
 import '../features/cue/presentation/create_cue_screen.dart';
+import '../features/cue/presentation/edit_cue_screen.dart';
+import '../features/cue/domain/cue_model.dart';
 import '../features/home/presentation/home_screen.dart';
 
 part 'router.g.dart';
@@ -55,6 +57,13 @@ GoRouter router(Ref ref) {
       GoRoute(
         path: '/create-cue',
         builder: (context, state) => const CreateCueScreen(),
+      ),
+      GoRoute(
+        path: '/edit-cue',
+        builder: (context, state) {
+          final cue = state.extra as CueModel;
+          return EditCueScreen(cue: cue);
+        },
       ),
     ],
   );

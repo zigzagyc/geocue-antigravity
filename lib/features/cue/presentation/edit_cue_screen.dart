@@ -3,9 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'create_cue_controller.dart';
 import 'widgets/cue_form.dart';
+import '../domain/cue_model.dart';
+import 'cue_list_screen.dart'; // import to access provider if needed, or just import domain
 
-class CreateCueScreen extends ConsumerWidget {
-  const CreateCueScreen({super.key});
+class EditCueScreen extends ConsumerWidget {
+  final CueModel cue;
+
+  const EditCueScreen({super.key, required this.cue});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -14,7 +18,7 @@ class CreateCueScreen extends ConsumerWidget {
          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error.toString())));
        }
        if (!state.isLoading && !state.hasError && previous?.isLoading == true) {
-         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cue Created!')));
+         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cue Updated!')));
          context.pop();
        }
     });
@@ -23,9 +27,10 @@ class CreateCueScreen extends ConsumerWidget {
     final isLoading = state.isLoading;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Create New Cue')),
+      appBar: AppBar(title: const Text('Edit Cue')),
       body: CueForm(
         isLoading: isLoading,
+        initialCue: cue,
         onSave: ({
           required title,
           required description,
@@ -39,10 +44,13 @@ class CreateCueScreen extends ConsumerWidget {
           polygonPoints
         }) {
           if (isAudioMode) {
-             ref.read(createCueControllerProvider.notifier).createCueFromAudio(
+             ref.read(createCueControllerProvider.notifier).updateCueFromAudio(
+              cueId: cue.id,
+              originalAudioUrl: cue.audioUrl,
+              createdAt: cue.createdAt,
               title: title,
               description: description,
-              audioFilePath: audioPath!, // Form ensures this is not null if valid
+              newAudioFilePath: audioPath, // Can be null if not re-recorded
               language: 'en',
               lat: lat,
               lng: lng,
@@ -51,17 +59,13 @@ class CreateCueScreen extends ConsumerWidget {
               polygonPoints: polygonPoints,
             );
           } else {
-             ref.read(createCueControllerProvider.notifier).createCueFromText(
-              title: title, // Use title as title (was title controller)
-              description: description, // Not used in method? Method has title, description, textContent.
-              // Wait, original logic:
-              // createCueFromText(title: title, description: description, textContent: description)
-              // This seems redundant. Let's keep it consistent with previous logic.
-              // Previous: description was used for both description and textContent?
-              // "description" controller was labeled "Text Content".
-              // So for Text Mode: description IS the content.
-              // For Audio Mode: description is optional description.
-              textContent: textContent!, // Form ensures not null in text mode
+             ref.read(createCueControllerProvider.notifier).updateCueFromText(
+              cueId: cue.id,
+              createdAt: cue.createdAt,
+
+              title: title,
+              description: description,
+              textContent: textContent!,
               language: 'en',
               lat: lat,
               lng: lng,

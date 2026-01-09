@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter/foundation.dart';
+
 
 class ZoneSelector extends StatefulWidget {
   final double initialLat;
   final double initialLng;
+  final double initialRadius;
+  final String initialZoneType;
+  final List<Map<String, double>>? initialPolygonPoints;
   final Function(double radius, String zoneType, List<Map<String, double>>? polygonPoints) onZoneChanged;
 
   const ZoneSelector({
     super.key,
     required this.initialLat,
     required this.initialLng,
+    this.initialRadius = 50.0,
+    this.initialZoneType = 'circle',
+    this.initialPolygonPoints,
     required this.onZoneChanged,
   });
 
@@ -19,20 +25,32 @@ class ZoneSelector extends StatefulWidget {
 }
 
 class _ZoneSelectorState extends State<ZoneSelector> {
-  late GoogleMapController _mapController;
   final Set<Marker> _markers = {};
   final Set<Circle> _circles = {};
   final Set<Polygon> _polygons = {};
   final Set<Polyline> _polylines = {}; // For drawing feedback
 
-  bool _isPolygonMode = false;
-  double _radius = 50.0;
+  late double _radius;
+  late bool _isPolygonMode;
   final List<LatLng> _polygonPoints = [];
   
   @override
   void initState() {
     super.initState();
-    _updateCircle();
+    _radius = widget.initialRadius;
+    _isPolygonMode = widget.initialZoneType == 'polygon';
+    if (widget.initialPolygonPoints != null) {
+      _polygonPoints.addAll(widget.initialPolygonPoints!.map((p) => LatLng(p['lat']!, p['lng']!)));
+    }
+    
+    // Defer the initial update to after build to avoid "setState during build" errors if called synchronously
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_isPolygonMode) {
+          _updatePolygon();
+        } else {
+          _updateCircle();
+        }
+    });
   }
 
   void _updateCircle() {
@@ -44,7 +62,7 @@ class _ZoneSelectorState extends State<ZoneSelector> {
             circleId: const CircleId('zone_circle'),
             center: LatLng(widget.initialLat, widget.initialLng),
             radius: _radius,
-            fillColor: Colors.blue.withOpacity(0.2),
+            fillColor: Colors.blue.withValues(alpha: 0.2),
             strokeColor: Colors.blue,
             strokeWidth: 2,
           ),
@@ -99,7 +117,7 @@ class _ZoneSelectorState extends State<ZoneSelector> {
             Polygon(
               polygonId: const PolygonId('zone_polygon'),
               points: _polygonPoints,
-              fillColor: Colors.purple.withOpacity(0.2),
+              fillColor: Colors.purple.withValues(alpha: 0.2),
               strokeColor: Colors.purple,
               strokeWidth: 2,
             ),
@@ -213,7 +231,6 @@ class _ZoneSelectorState extends State<ZoneSelector> {
                 target: LatLng(widget.initialLat, widget.initialLng),
                 zoom: 17,
               ),
-              onMapCreated: (controller) => _mapController = controller,
               markers: _markers,
               circles: _circles,
               polygons: _polygons,
