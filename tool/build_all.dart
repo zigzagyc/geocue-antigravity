@@ -6,23 +6,23 @@ const String appName = 'hearhere';
 
 void main() async {
   final distDir = Directory('dist/PAC');
-  if (distDir.existsSync()) {
-    print('Cleaning dist/PAC directory...');
-    distDir.deleteSync(recursive: true);
-  }
+  // if (distDir.existsSync()) {
+  //   print('Cleaning dist/PAC directory...');
+  //   distDir.deleteSync(recursive: true);
+  // }
   distDir.createSync(recursive: true);
 
-  print('Starting comprehensive release build for $appName...');
+  print('Starting comprehensive release build for $appName... (Resuming)');
 
   // 1. Android
-  await buildAndroid(distDir);
+  // await buildAndroid(distDir);
 
   // 2. Web
-  await buildWeb(distDir);
+  // await buildWeb(distDir);
 
   // 3. Desktop & iOS (Host dependent)
   if (Platform.isMacOS) {
-    await buildMacOS(distDir);
+    // await buildMacOS(distDir); // Skipped as it was timing out
     await buildIOS(distDir);
   } else if (Platform.isWindows) {
     await buildWindows(distDir);
