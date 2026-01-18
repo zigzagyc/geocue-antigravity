@@ -1,4 +1,4 @@
-# hearhere
+# HearHere
 
 A new Flutter project.
 
