@@ -47,7 +47,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAG70ICwpL-u81oH0QWdz3fcMiDnLQdYN8',
+    apiKey: 'API_KEY',
     appId: '1:773637258020:android:d9a7fec22a2d4f0ec091b1',
     messagingSenderId: '773637258020',
     projectId: 'geocue-antigravity',
@@ -55,7 +55,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyB_Z3GYUN05R7V1ZebN1ltFS7MpRVN2il8',
+    apiKey: 'API_KEY',
     appId: '1:773637258020:ios:d5b48228d0e39008c091b1',
     messagingSenderId: '773637258020',
     projectId: 'geocue-antigravity',
@@ -64,7 +64,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyB_Z3GYUN05R7V1ZebN1ltFS7MpRVN2il8',
+    apiKey: 'API_KEY',
     appId: '1:773637258020:ios:d5b48228d0e39008c091b1',
     messagingSenderId: '773637258020',
     projectId: 'geocue-antigravity',
