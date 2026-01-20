@@ -45,7 +45,7 @@ class DefaultFirebaseOptions {
         );
     }
   }
-
+//Use the section in wechat to replace this placeholder
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'API_KEY',
     appId: '1:773637258020:android:d9a7fec22a2d4f0ec091b1',
