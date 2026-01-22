@@ -64,7 +64,7 @@ class GeminiAiService implements AiService {
   final GenerativeModel _model;
   
   GeminiAiService(String apiKey) 
-    : _model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
+    : _model = GenerativeModel(model: 'gemini-1.5-flash-latest', apiKey: apiKey);
 
   @override
   Future<String> textToSpeech(String text, String language) async {
