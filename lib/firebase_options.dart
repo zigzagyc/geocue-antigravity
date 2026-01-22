@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -47,16 +48,16 @@ class DefaultFirebaseOptions {
   }
   //Use the section in wechat to replace this place holder
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAG70ICwpL-u81oH0QWdz3fcMiDnLQdYN8',
+  static FirebaseOptions get android => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_ANDROID_API_KEY']!,
     appId: '1:773637258020:android:d9a7fec22a2d4f0ec091b1',
     messagingSenderId: '773637258020',
     projectId: 'geocue-antigravity',
     storageBucket: 'geocue-antigravity.firebasestorage.app',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyB_Z3GYUN05R7V1ZebN1ltFS7MpRVN2il8',
+  static FirebaseOptions get ios => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_IOS_API_KEY']!,
     appId: '1:773637258020:ios:d5b48228d0e39008c091b1',
     messagingSenderId: '773637258020',
     projectId: 'geocue-antigravity',
@@ -64,8 +65,8 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.hearhere.hearhere',
   );
 
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyB_Z3GYUN05R7V1ZebN1ltFS7MpRVN2il8',
+  static FirebaseOptions get macos => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_MACOS_API_KEY']!,
     appId: '1:773637258020:ios:d5b48228d0e39008c091b1',
     messagingSenderId: '773637258020',
     projectId: 'geocue-antigravity',

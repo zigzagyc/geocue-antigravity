@@ -14,6 +14,7 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
   isAdmin: json['isAdmin'] as bool? ?? false,
   canCreateCues: json['canCreateCues'] as bool? ?? true,
   isDisabled: json['isDisabled'] as bool? ?? false,
+  preferredLanguage: json['preferredLanguage'] as String? ?? 'en',
 );
 
 Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
@@ -25,4 +26,5 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'isAdmin': instance.isAdmin,
       'canCreateCues': instance.canCreateCues,
       'isDisabled': instance.isDisabled,
+      'preferredLanguage': instance.preferredLanguage,
     };

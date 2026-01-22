@@ -13,6 +13,7 @@ abstract class UserModel with _$UserModel {
     @Default(false) bool isAdmin,
     @Default(true) bool canCreateCues,
     @Default(false) bool isDisabled,
+    @Default('en') String preferredLanguage,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

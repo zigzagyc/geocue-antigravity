@@ -77,7 +77,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               else
                 ElevatedButton(
                   onPressed: () {
-                    print('Login button pressed');
                     _submit();
                   },
                   child: const Text('Login'),

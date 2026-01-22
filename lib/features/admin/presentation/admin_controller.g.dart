@@ -33,7 +33,7 @@ final class AdminControllerProvider
   AdminController create() => AdminController();
 }
 
-String _$adminControllerHash() => r'0b622787e148fda2bcd31d9f7cedcdda4948b04d';
+String _$adminControllerHash() => r'c78047e0978ee335013bd332772887ffddf6ad26';
 
 abstract class _$AdminController extends $AsyncNotifier<List<UserModel>> {
   FutureOr<List<UserModel>> build();

@@ -46,7 +46,6 @@ class PlaybackService extends _$PlaybackService {
         _initCompleter.complete();
       }
     } catch (e) {
-      print('PlaybackService Initialization Error: $e');
       if (!_initCompleter.isCompleted) {
         _initCompleter.completeError(e);
       }
@@ -70,7 +69,6 @@ class PlaybackService extends _$PlaybackService {
 
   Future<void> _processQueue() async {
     if (_isPlaying || _queue.isEmpty) {
-        print('Queue processing skipped: isPlaying=$_isPlaying, queueLength=${_queue.length}');
         return;
     }
     
@@ -78,22 +76,17 @@ class PlaybackService extends _$PlaybackService {
     final cue = _queue.removeAt(0);
     state = AsyncValue.data(cue);
     
-    print('Attempting to play cue: ${cue.title} (Audio: ${cue.audioUrl.isNotEmpty})');
-
     try {
       if (cue.audioUrl.isNotEmpty) {
         // Voice Cue
-        print('Playing audio from URL: ${cue.audioUrl}');
         await _player.setUrl(cue.audioUrl);
         await _player.play();
       } else {
         // Text Cue (TTS)
         final text = cue.description ?? cue.title;
-        print('Speaking TTS: $text');
         await _tts.speak(text);
       }
     } catch (e) {
-      print('Playback Error: $e');
       _onPlaybackCompleted(); // Ensure queue continues even on error
     }
   }

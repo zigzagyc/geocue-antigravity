@@ -22,13 +22,12 @@ class ProximityService extends _$ProximityService {
   }
 
   void startMonitoring() {
-    print('ProximityService: startMonitoring called. Subscription exists: ${_positionSubscription != null}');
+
     if (_positionSubscription != null) return;
 
     LocationSettings locationSettings;
     
     if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
-      print('ProximityService: Using AppleSettings');
       locationSettings = AppleSettings(
         accuracy: LocationAccuracy.high,
         activityType: ActivityType.fitness,
@@ -38,7 +37,6 @@ class ProximityService extends _$ProximityService {
         allowBackgroundLocationUpdates: true,
       );
     } else {
-      print('ProximityService: Using standard LocationSettings');
       locationSettings = const LocationSettings(
         accuracy: LocationAccuracy.high,
         distanceFilter: 10,
@@ -46,22 +44,18 @@ class ProximityService extends _$ProximityService {
     }
 
     // Immediate check on startup
-    print('ProximityService: Getting initial position...');
     Geolocator.getCurrentPosition().then((position) {
-      print('ProximityService: Initial position received: ${position.latitude}, ${position.longitude}');
       _checkProximity(position);
     }).catchError((e) {
-      print('Error getting initial position: $e');
+      // Handle error
     });
 
-    print('ProximityService: Subscribing to position stream...');
     _positionSubscription = Geolocator.getPositionStream(
       locationSettings: locationSettings,
     ).listen((position) {
-      print('ProximityService: Stream position update: ${position.latitude}, ${position.longitude}');
       _checkProximity(position);
     }, onError: (e) {
-      print('ProximityService: Stream Error: $e');
+      // Handle error
     });
   }
 
@@ -111,7 +105,6 @@ class ProximityService extends _$ProximityService {
     for (final cue in cuesInRange) {
       if (cue.id != newestCue.id) {
         _playedCueIds.add(cue.id);
-        print('Skipping older cue: ${cue.title} (${cue.id}) in favor of ${newestCue.title}');
       }
     }
   }
@@ -134,7 +127,6 @@ class ProximityService extends _$ProximityService {
 
   void _triggerPlayback(CueModel cue) {
     if (_playedCueIds.contains(cue.id)) {
-        print('Skipping ${cue.title}, already played.');
         return;
     }
     _playedCueIds.add(cue.id);

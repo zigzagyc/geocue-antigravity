@@ -48,11 +48,13 @@ class CreateCueController extends _$CreateCueController {
     }
   }
 
+  static const supportedLanguages = ['en', 'zh', 'es', 'fr', 'de', 'ja', 'ko'];
+
   Future<void> createCueFromText({
     required String title,
     required String description,
     required String textContent,
-    required String language,
+    String? language, // Optional. If null, we detect.
     required double lat,
     required double lng,
     double radius = 50.0,
@@ -63,27 +65,74 @@ class CreateCueController extends _$CreateCueController {
     state = await AsyncValue.guard(() async {
       final user = await _fetchCurrentUser();
       await _checkPermissions(user, lat, lng);
+      
+      final aiService = ref.read(aiServiceProvider);
 
-      // 1. Generate Audio from Text
-      final audioUrl = await ref.read(aiServiceProvider).textToSpeech(textContent, language);
+      // 1. Detect Language if not provided
+      String sourceLang = language ?? 'en';
+      if (language == null || language.isEmpty) {
+        sourceLang = await aiService.detectLanguage(textContent);
+      }
 
-      // 2. Create Cue Model
-      final cue = CueModel(
-        id: const Uuid().v4(),
+
+
+      // 2. Create Main Cue (Original)
+      // Generate TTS for original
+      final mainAudioUrl = await aiService.textToSpeech(textContent, sourceLang);
+      
+      final mainCueId = const Uuid().v4();
+      final mainCue = CueModel(
+        id: mainCueId,
         ownerId: user.id,
         title: title,
         description: description,
-        audioUrl: audioUrl,
+        audioUrl: mainAudioUrl,
         latitude: lat,
         longitude: lng,
         createdAt: DateTime.now(),
         radius: radius,
         zoneType: zoneType,
         polygonPoints: polygonPoints,
+        language: sourceLang,
+        originalCueId: null, // This is original
       );
 
-      // 3. Save to Repository
-      await ref.read(cueRepositoryProvider).createCue(cue);
+      await ref.read(cueRepositoryProvider).createCue(mainCue);
+
+      // 3. Generate Variations
+      // We want to generate for ALL supported languages EXCEPT the source one.
+      for (final targetLang in supportedLanguages) {
+        if (targetLang == sourceLang) continue;
+        
+
+        
+        // Translate
+        final translatedText = await aiService.translate(textContent, targetLang);
+        final translatedTitle = await aiService.translate(title, targetLang);
+        final translatedDesc = await aiService.translate(description, targetLang); // Optional
+        
+        // TTS
+        final audioUrl = await aiService.textToSpeech(translatedText, targetLang);
+        
+        final siblingCue = CueModel(
+          id: const Uuid().v4(),
+          ownerId: user.id,
+          title: translatedTitle,
+          description: translatedDesc,
+          audioUrl: audioUrl,
+          latitude: lat,
+          longitude: lng,
+          createdAt: DateTime.now(),
+          radius: radius,
+          zoneType: zoneType,
+          polygonPoints: polygonPoints,
+          language: targetLang,
+          originalCueId: mainCueId, // Link to main
+          referenceCueId: mainCueId, // Link to main
+        );
+        
+        await ref.read(cueRepositoryProvider).createCue(siblingCue);
+      }
     });
   }
 
@@ -91,7 +140,7 @@ class CreateCueController extends _$CreateCueController {
     required String title,
     required String description,
     required String audioFilePath,
-    required String language,
+    String? language,
     required double lat,
     required double lng,
     double radius = 50.0,
@@ -102,33 +151,85 @@ class CreateCueController extends _$CreateCueController {
     state = await AsyncValue.guard(() async {
       final user = await _fetchCurrentUser();
       await _checkPermissions(user, lat, lng);
+      final aiService = ref.read(aiServiceProvider);
 
       final fileName = '${const Uuid().v4()}.m4a';
       final storagePath = 'users/${user.id}/cues/$fileName';
       
-      // 1. Upload Audio File
-      final audioUrl = await ref.read(storageServiceProvider).uploadFile(
+      // 1. Upload Audio File (Source)
+      final sourceAudioUrl = await ref.read(storageServiceProvider).uploadFile(
         File(audioFilePath),
         storagePath,
       );
 
-      // 2. Create Cue Model
-      final cue = CueModel(
-        id: const Uuid().v4(),
+      // 2. Transcribe & Detect Language
+      // If language not provided, we might need a hint or multi-pass. 
+      // Current STT usually needs a language hint, or defaults to en. 
+      // Using 'en' as default hint if null, but we can try to detect.
+      // Actually, if we use Gemini, we can ask it to detect language FROM audio.
+      String sourceLang = language ?? 'en';
+      final transcription = await aiService.speechToText(audioFilePath, sourceLang);
+      
+      // If we didn't know language, let's detect it from the transcription text now
+      if (language == null || language.isEmpty) {
+        sourceLang = await aiService.detectLanguage(transcription);
+      }
+      
+
+
+      // 3. Create Main Cue
+      final mainCueId = const Uuid().v4();
+      final mainCue = CueModel(
+        id: mainCueId,
         ownerId: user.id,
         title: title,
         description: description,
-        audioUrl: audioUrl,
+        audioUrl: sourceAudioUrl, // Original voice
         latitude: lat,
         longitude: lng,
         createdAt: DateTime.now(),
         radius: radius,
         zoneType: zoneType,
         polygonPoints: polygonPoints,
+        language: sourceLang,
+        originalCueId: null,
       );
 
-      // 4. Save to Repository
-      await ref.read(cueRepositoryProvider).createCue(cue);
+      await ref.read(cueRepositoryProvider).createCue(mainCue);
+
+      // 4. Generate Variations (Translated Text + TTS)
+      for (final targetLang in supportedLanguages) {
+        if (targetLang == sourceLang) continue;
+        
+
+
+        // Translate the transcription
+        final translatedText = await aiService.translate(transcription, targetLang);
+        final translatedTitle = await aiService.translate(title, targetLang);
+        final translatedDesc = await aiService.translate(description, targetLang);
+
+        // TTS
+        final audioUrl = await aiService.textToSpeech(translatedText, targetLang);
+
+        final siblingCue = CueModel(
+          id: const Uuid().v4(),
+          ownerId: user.id,
+          title: translatedTitle,
+          description: translatedDesc, // Translated description
+          audioUrl: audioUrl, // AI Voice
+          latitude: lat,
+          longitude: lng,
+          createdAt: DateTime.now(),
+          radius: radius,
+          zoneType: zoneType, // Share zone
+          polygonPoints: polygonPoints,
+          language: targetLang,
+          originalCueId: mainCueId,
+          referenceCueId: mainCueId,
+        );
+        
+        await ref.read(cueRepositoryProvider).createCue(siblingCue);
+      }
     });
   }
   

@@ -9,6 +9,7 @@ import 'package:hearhere/features/map/presentation/map_controller.dart';
 import 'package:hearhere/features/playback/service/proximity_service.dart';
 import 'package:hearhere/features/playback/service/playback_service.dart';
 import 'package:hearhere/features/auth/presentation/auth_controller.dart';
+import 'package:hearhere/features/utils/language_controller.dart';
 import 'package:hearhere/features/auth/data/auth_repository.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
@@ -30,6 +31,7 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
   @override
   void initState() {
     super.initState();
+    print('MapScreen: initState');
     WidgetsBinding.instance.addObserver(this);
     _loadSavedLocation();
     _requestLocationPermission();
@@ -37,6 +39,7 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
 
   @override
   void dispose() {
+    print('MapScreen: dispose');
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -44,7 +47,6 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      print('App resumed. Re-checking location permissions...');
       _requestLocationPermission();
     }
   }
@@ -79,13 +81,11 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
     _isCheckingPermission = true;
 
     try {
-      print('Requesting LocationWhenInUse permission...');
       var status = await Permission.locationWhenInUse.status;
       
       if (!status.isGranted) {
         status = await Permission.locationWhenInUse.request();
       }
-      print('LocationWhenInUse status: $status');
       
       if (!status.isGranted) {
         print('Location permission denied/permanently denied. Prompting user...');
@@ -119,12 +119,9 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
       } else {
         // Granted!
         // Then try to upgrade to "Always" for background playback
-        print('Requesting LocationAlways permission...');
         final alwaysStatus = await Permission.locationAlways.request();
-        print('LocationAlways status: $alwaysStatus');
         
         if (!mounted) return;
-        print('Starting proximity monitoring...');
         ref.read(proximityServiceProvider.notifier).startMonitoring();
       }
     } finally {
@@ -134,6 +131,7 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
 
   @override
   Widget build(BuildContext context) {
+    print('MapScreen: build called');
     final markersState = ref.watch(mapControllerProvider);
     final currentCue = ref.watch(playbackServiceProvider).value;
 
@@ -144,6 +142,37 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(mapControllerProvider.notifier).refreshCues(),
+          ),
+          IconButton(
+            icon: const Icon(Icons.translate),
+            onPressed: () {
+               showDialog(
+                 context: context, 
+                 builder: (ctx) => AlertDialog(
+                   title: const Text('Select Language'),
+                   content: SizedBox(
+                     width: double.maxFinite,
+                     child: ListView(
+                       shrinkWrap: true,
+                       children: PreferredLanguage.supportedLanguages.map((lang) {
+                         return ListTile(
+                           leading: Text(lang['flag']!, style: const TextStyle(fontSize: 24)),
+                           title: Text(lang['name']!),
+                           onTap: () {
+                             ref.read(preferredLanguageProvider.notifier).setLanguage(lang['code']!);
+                             Navigator.pop(ctx);
+                             // Refresh map to apply filter
+                             Future.delayed(const Duration(milliseconds: 300), () {
+                                ref.read(mapControllerProvider.notifier).refreshCues();
+                             });
+                           },
+                         );
+                       }).toList(),
+                     ),
+                   ),
+                 )
+               );
+            },
           ),
           // Guest Mode Login / Logout Toggle
           IconButton(
@@ -164,12 +193,34 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
       ),
       body: Stack(
         children: [
-          markersState.when(
-            data: (markers) {
+          Builder(
+            builder: (context) {
+              final markers = markersState.asData?.value;
+              // If we have no data and are loading, show initial loader
+              if (markers == null && markersState.isLoading) {
+                 return const Center(child: CircularProgressIndicator());
+              }
+              
+              // If we have no data and an error, show error
+              if (markers == null && markersState.hasError) {
+                 return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error, color: Colors.red, size: 48),
+                      Text('Error loading cues: ${markersState.error}'),
+                    ],
+                  ),
+                );
+              }
+
+              // Otherwise, show map with whatever data we have (or empty)
+              final currentMarkers = markers ?? {};
+              
               return Stack(
                 children: [
                    GoogleMap(
-                    markers: markers,
+                    markers: currentMarkers,
                     initialCameraPosition: _initialCameraPosition,
                     myLocationEnabled: true,
                     myLocationButtonEnabled: false,
@@ -193,24 +244,30 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
                       padding: const EdgeInsets.all(8),
                       color: Colors.black54,
                       child: Text(
-                        'Debug: ${markers.length} markers',
+                        'Debug: ${currentMarkers.length} markers',
                         style: const TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
+                  // Show small loading indicator if refreshing in background
+                  if (markersState.isLoading)
+                     const Positioned(
+                       top: 10,
+                       right: 10,
+                       child: SafeArea(
+                         child: Padding(
+                           padding: EdgeInsets.all(8.0),
+                           child: SizedBox(
+                             width: 20, 
+                             height: 20, 
+                             child: CircularProgressIndicator(strokeWidth: 2),
+                           ),
+                         ),
+                       ),
+                     ),
                 ],
               );
-            },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error, color: Colors.red, size: 48),
-                  Text('Error loading cues: $err'),
-                ],
-              ),
-            ),
+            }
           ),
           if (currentCue != null)
             Positioned(

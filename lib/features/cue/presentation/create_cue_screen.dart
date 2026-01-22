@@ -58,7 +58,7 @@ class CreateCueScreen extends ConsumerWidget {
               title: title,
               description: description,
               audioFilePath: audioPath!, // Form ensures this is not null if valid
-              language: 'en',
+              language: null, // Auto-detect
               lat: lat,
               lng: lng,
               radius: radius,
@@ -77,7 +77,7 @@ class CreateCueScreen extends ConsumerWidget {
               // So for Text Mode: description IS the content.
               // For Audio Mode: description is optional description.
               textContent: textContent!, // Form ensures not null in text mode
-              language: 'en',
+              language: null, // Auto-detect
               lat: lat,
               lng: lng,
               radius: radius,

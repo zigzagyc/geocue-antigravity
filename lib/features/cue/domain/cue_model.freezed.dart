@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CueModel {
 
- String get id; String get ownerId; String get title; String? get description; String get audioUrl; double get latitude; double get longitude; DateTime get createdAt; double get radius; String get zoneType;// 'circle' or 'polygon'
+ String get id; String get ownerId; String get title; String? get description; String get audioUrl; double get latitude; double get longitude; DateTime get createdAt; String get language; String? get originalCueId;// If null, this is original. Points to source cue ID.
+ String? get referenceCueId;// Optional grouping ID if different from originalCueId
+ double get radius; String get zoneType;// 'circle' or 'polygon'
  List<Map<String, double>>? get polygonPoints;
 /// Create a copy of CueModel
 /// with the given fields replaced by the non-null parameter values.
@@ -29,16 +31,16 @@ $CueModelCopyWith<CueModel> get copyWith => _$CueModelCopyWithImpl<CueModel>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CueModel&&(identical(other.id, id) || other.id == id)&&(identical(other.ownerId, ownerId) || other.ownerId == ownerId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.audioUrl, audioUrl) || other.audioUrl == audioUrl)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.radius, radius) || other.radius == radius)&&(identical(other.zoneType, zoneType) || other.zoneType == zoneType)&&const DeepCollectionEquality().equals(other.polygonPoints, polygonPoints));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CueModel&&(identical(other.id, id) || other.id == id)&&(identical(other.ownerId, ownerId) || other.ownerId == ownerId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.audioUrl, audioUrl) || other.audioUrl == audioUrl)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.language, language) || other.language == language)&&(identical(other.originalCueId, originalCueId) || other.originalCueId == originalCueId)&&(identical(other.referenceCueId, referenceCueId) || other.referenceCueId == referenceCueId)&&(identical(other.radius, radius) || other.radius == radius)&&(identical(other.zoneType, zoneType) || other.zoneType == zoneType)&&const DeepCollectionEquality().equals(other.polygonPoints, polygonPoints));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,ownerId,title,description,audioUrl,latitude,longitude,createdAt,radius,zoneType,const DeepCollectionEquality().hash(polygonPoints));
+int get hashCode => Object.hash(runtimeType,id,ownerId,title,description,audioUrl,latitude,longitude,createdAt,language,originalCueId,referenceCueId,radius,zoneType,const DeepCollectionEquality().hash(polygonPoints));
 
 @override
 String toString() {
-  return 'CueModel(id: $id, ownerId: $ownerId, title: $title, description: $description, audioUrl: $audioUrl, latitude: $latitude, longitude: $longitude, createdAt: $createdAt, radius: $radius, zoneType: $zoneType, polygonPoints: $polygonPoints)';
+  return 'CueModel(id: $id, ownerId: $ownerId, title: $title, description: $description, audioUrl: $audioUrl, latitude: $latitude, longitude: $longitude, createdAt: $createdAt, language: $language, originalCueId: $originalCueId, referenceCueId: $referenceCueId, radius: $radius, zoneType: $zoneType, polygonPoints: $polygonPoints)';
 }
 
 
@@ -49,7 +51,7 @@ abstract mixin class $CueModelCopyWith<$Res>  {
   factory $CueModelCopyWith(CueModel value, $Res Function(CueModel) _then) = _$CueModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String ownerId, String title, String? description, String audioUrl, double latitude, double longitude, DateTime createdAt, double radius, String zoneType, List<Map<String, double>>? polygonPoints
+ String id, String ownerId, String title, String? description, String audioUrl, double latitude, double longitude, DateTime createdAt, String language, String? originalCueId, String? referenceCueId, double radius, String zoneType, List<Map<String, double>>? polygonPoints
 });
 
 
@@ -66,7 +68,7 @@ class _$CueModelCopyWithImpl<$Res>
 
 /// Create a copy of CueModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? ownerId = null,Object? title = null,Object? description = freezed,Object? audioUrl = null,Object? latitude = null,Object? longitude = null,Object? createdAt = null,Object? radius = null,Object? zoneType = null,Object? polygonPoints = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? ownerId = null,Object? title = null,Object? description = freezed,Object? audioUrl = null,Object? latitude = null,Object? longitude = null,Object? createdAt = null,Object? language = null,Object? originalCueId = freezed,Object? referenceCueId = freezed,Object? radius = null,Object? zoneType = null,Object? polygonPoints = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,ownerId: null == ownerId ? _self.ownerId : ownerId // ignore: cast_nullable_to_non_nullable
@@ -76,7 +78,10 @@ as String?,audioUrl: null == audioUrl ? _self.audioUrl : audioUrl // ignore: cas
 as String,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,radius: null == radius ? _self.radius : radius // ignore: cast_nullable_to_non_nullable
+as DateTime,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
+as String,originalCueId: freezed == originalCueId ? _self.originalCueId : originalCueId // ignore: cast_nullable_to_non_nullable
+as String?,referenceCueId: freezed == referenceCueId ? _self.referenceCueId : referenceCueId // ignore: cast_nullable_to_non_nullable
+as String?,radius: null == radius ? _self.radius : radius // ignore: cast_nullable_to_non_nullable
 as double,zoneType: null == zoneType ? _self.zoneType : zoneType // ignore: cast_nullable_to_non_nullable
 as String,polygonPoints: freezed == polygonPoints ? _self.polygonPoints : polygonPoints // ignore: cast_nullable_to_non_nullable
 as List<Map<String, double>>?,
@@ -164,10 +169,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String ownerId,  String title,  String? description,  String audioUrl,  double latitude,  double longitude,  DateTime createdAt,  double radius,  String zoneType,  List<Map<String, double>>? polygonPoints)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String ownerId,  String title,  String? description,  String audioUrl,  double latitude,  double longitude,  DateTime createdAt,  String language,  String? originalCueId,  String? referenceCueId,  double radius,  String zoneType,  List<Map<String, double>>? polygonPoints)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CueModel() when $default != null:
-return $default(_that.id,_that.ownerId,_that.title,_that.description,_that.audioUrl,_that.latitude,_that.longitude,_that.createdAt,_that.radius,_that.zoneType,_that.polygonPoints);case _:
+return $default(_that.id,_that.ownerId,_that.title,_that.description,_that.audioUrl,_that.latitude,_that.longitude,_that.createdAt,_that.language,_that.originalCueId,_that.referenceCueId,_that.radius,_that.zoneType,_that.polygonPoints);case _:
   return orElse();
 
 }
@@ -185,10 +190,10 @@ return $default(_that.id,_that.ownerId,_that.title,_that.description,_that.audio
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String ownerId,  String title,  String? description,  String audioUrl,  double latitude,  double longitude,  DateTime createdAt,  double radius,  String zoneType,  List<Map<String, double>>? polygonPoints)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String ownerId,  String title,  String? description,  String audioUrl,  double latitude,  double longitude,  DateTime createdAt,  String language,  String? originalCueId,  String? referenceCueId,  double radius,  String zoneType,  List<Map<String, double>>? polygonPoints)  $default,) {final _that = this;
 switch (_that) {
 case _CueModel():
-return $default(_that.id,_that.ownerId,_that.title,_that.description,_that.audioUrl,_that.latitude,_that.longitude,_that.createdAt,_that.radius,_that.zoneType,_that.polygonPoints);case _:
+return $default(_that.id,_that.ownerId,_that.title,_that.description,_that.audioUrl,_that.latitude,_that.longitude,_that.createdAt,_that.language,_that.originalCueId,_that.referenceCueId,_that.radius,_that.zoneType,_that.polygonPoints);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +210,10 @@ return $default(_that.id,_that.ownerId,_that.title,_that.description,_that.audio
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String ownerId,  String title,  String? description,  String audioUrl,  double latitude,  double longitude,  DateTime createdAt,  double radius,  String zoneType,  List<Map<String, double>>? polygonPoints)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String ownerId,  String title,  String? description,  String audioUrl,  double latitude,  double longitude,  DateTime createdAt,  String language,  String? originalCueId,  String? referenceCueId,  double radius,  String zoneType,  List<Map<String, double>>? polygonPoints)?  $default,) {final _that = this;
 switch (_that) {
 case _CueModel() when $default != null:
-return $default(_that.id,_that.ownerId,_that.title,_that.description,_that.audioUrl,_that.latitude,_that.longitude,_that.createdAt,_that.radius,_that.zoneType,_that.polygonPoints);case _:
+return $default(_that.id,_that.ownerId,_that.title,_that.description,_that.audioUrl,_that.latitude,_that.longitude,_that.createdAt,_that.language,_that.originalCueId,_that.referenceCueId,_that.radius,_that.zoneType,_that.polygonPoints);case _:
   return null;
 
 }
@@ -220,7 +225,7 @@ return $default(_that.id,_that.ownerId,_that.title,_that.description,_that.audio
 @JsonSerializable()
 
 class _CueModel implements CueModel {
-  const _CueModel({required this.id, this.ownerId = '', required this.title, this.description, required this.audioUrl, required this.latitude, required this.longitude, required this.createdAt, this.radius = 50.0, this.zoneType = 'circle', final  List<Map<String, double>>? polygonPoints}): _polygonPoints = polygonPoints;
+  const _CueModel({required this.id, this.ownerId = '', required this.title, this.description, required this.audioUrl, required this.latitude, required this.longitude, required this.createdAt, this.language = 'en', this.originalCueId, this.referenceCueId, this.radius = 50.0, this.zoneType = 'circle', final  List<Map<String, double>>? polygonPoints}): _polygonPoints = polygonPoints;
   factory _CueModel.fromJson(Map<String, dynamic> json) => _$CueModelFromJson(json);
 
 @override final  String id;
@@ -231,6 +236,11 @@ class _CueModel implements CueModel {
 @override final  double latitude;
 @override final  double longitude;
 @override final  DateTime createdAt;
+@override@JsonKey() final  String language;
+@override final  String? originalCueId;
+// If null, this is original. Points to source cue ID.
+@override final  String? referenceCueId;
+// Optional grouping ID if different from originalCueId
 @override@JsonKey() final  double radius;
 @override@JsonKey() final  String zoneType;
 // 'circle' or 'polygon'
@@ -258,16 +268,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CueModel&&(identical(other.id, id) || other.id == id)&&(identical(other.ownerId, ownerId) || other.ownerId == ownerId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.audioUrl, audioUrl) || other.audioUrl == audioUrl)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.radius, radius) || other.radius == radius)&&(identical(other.zoneType, zoneType) || other.zoneType == zoneType)&&const DeepCollectionEquality().equals(other._polygonPoints, _polygonPoints));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CueModel&&(identical(other.id, id) || other.id == id)&&(identical(other.ownerId, ownerId) || other.ownerId == ownerId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.audioUrl, audioUrl) || other.audioUrl == audioUrl)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.language, language) || other.language == language)&&(identical(other.originalCueId, originalCueId) || other.originalCueId == originalCueId)&&(identical(other.referenceCueId, referenceCueId) || other.referenceCueId == referenceCueId)&&(identical(other.radius, radius) || other.radius == radius)&&(identical(other.zoneType, zoneType) || other.zoneType == zoneType)&&const DeepCollectionEquality().equals(other._polygonPoints, _polygonPoints));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,ownerId,title,description,audioUrl,latitude,longitude,createdAt,radius,zoneType,const DeepCollectionEquality().hash(_polygonPoints));
+int get hashCode => Object.hash(runtimeType,id,ownerId,title,description,audioUrl,latitude,longitude,createdAt,language,originalCueId,referenceCueId,radius,zoneType,const DeepCollectionEquality().hash(_polygonPoints));
 
 @override
 String toString() {
-  return 'CueModel(id: $id, ownerId: $ownerId, title: $title, description: $description, audioUrl: $audioUrl, latitude: $latitude, longitude: $longitude, createdAt: $createdAt, radius: $radius, zoneType: $zoneType, polygonPoints: $polygonPoints)';
+  return 'CueModel(id: $id, ownerId: $ownerId, title: $title, description: $description, audioUrl: $audioUrl, latitude: $latitude, longitude: $longitude, createdAt: $createdAt, language: $language, originalCueId: $originalCueId, referenceCueId: $referenceCueId, radius: $radius, zoneType: $zoneType, polygonPoints: $polygonPoints)';
 }
 
 
@@ -278,7 +288,7 @@ abstract mixin class _$CueModelCopyWith<$Res> implements $CueModelCopyWith<$Res>
   factory _$CueModelCopyWith(_CueModel value, $Res Function(_CueModel) _then) = __$CueModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String ownerId, String title, String? description, String audioUrl, double latitude, double longitude, DateTime createdAt, double radius, String zoneType, List<Map<String, double>>? polygonPoints
+ String id, String ownerId, String title, String? description, String audioUrl, double latitude, double longitude, DateTime createdAt, String language, String? originalCueId, String? referenceCueId, double radius, String zoneType, List<Map<String, double>>? polygonPoints
 });
 
 
@@ -295,7 +305,7 @@ class __$CueModelCopyWithImpl<$Res>
 
 /// Create a copy of CueModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? ownerId = null,Object? title = null,Object? description = freezed,Object? audioUrl = null,Object? latitude = null,Object? longitude = null,Object? createdAt = null,Object? radius = null,Object? zoneType = null,Object? polygonPoints = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? ownerId = null,Object? title = null,Object? description = freezed,Object? audioUrl = null,Object? latitude = null,Object? longitude = null,Object? createdAt = null,Object? language = null,Object? originalCueId = freezed,Object? referenceCueId = freezed,Object? radius = null,Object? zoneType = null,Object? polygonPoints = freezed,}) {
   return _then(_CueModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,ownerId: null == ownerId ? _self.ownerId : ownerId // ignore: cast_nullable_to_non_nullable
@@ -305,7 +315,10 @@ as String?,audioUrl: null == audioUrl ? _self.audioUrl : audioUrl // ignore: cas
 as String,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,radius: null == radius ? _self.radius : radius // ignore: cast_nullable_to_non_nullable
+as DateTime,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
+as String,originalCueId: freezed == originalCueId ? _self.originalCueId : originalCueId // ignore: cast_nullable_to_non_nullable
+as String?,referenceCueId: freezed == referenceCueId ? _self.referenceCueId : referenceCueId // ignore: cast_nullable_to_non_nullable
+as String?,radius: null == radius ? _self.radius : radius // ignore: cast_nullable_to_non_nullable
 as double,zoneType: null == zoneType ? _self.zoneType : zoneType // ignore: cast_nullable_to_non_nullable
 as String,polygonPoints: freezed == polygonPoints ? _self._polygonPoints : polygonPoints // ignore: cast_nullable_to_non_nullable
 as List<Map<String, double>>?,

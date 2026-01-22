@@ -15,6 +15,9 @@ abstract class CueModel with _$CueModel {
     required double latitude,
     required double longitude,
     required DateTime createdAt,
+    @Default('en') String language,
+    String? originalCueId, // If null, this is original. Points to source cue ID.
+    String? referenceCueId, // Optional grouping ID if different from originalCueId
     @Default(50.0) double radius,
     @Default('circle') String zoneType, // 'circle' or 'polygon'
     List<Map<String, double>>? polygonPoints,
