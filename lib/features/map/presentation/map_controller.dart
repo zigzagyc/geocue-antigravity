@@ -41,9 +41,7 @@ class MapController extends _$MapController {
   }
 
   Future<void> refreshCues() async {
-    print('MapController: refreshCues started');
     state = await AsyncValue.guard(() async {
-      print('MapController: fetching cues...');
       final cues = await ref.read(cueRepositoryProvider).getCues();
       final user = ref.read(currentUserModelProvider).value;
       final preferredLang = user?.preferredLanguage ?? 'en';

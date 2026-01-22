@@ -28,10 +28,11 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
   GoogleMapController? _mapController;
   bool _isCheckingPermission = false;
 
+  final GlobalKey _mapKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
-    print('MapScreen: initState');
     WidgetsBinding.instance.addObserver(this);
     _loadSavedLocation();
     _requestLocationPermission();
@@ -39,7 +40,6 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
 
   @override
   void dispose() {
-    print('MapScreen: dispose');
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -88,7 +88,6 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
       }
       
       if (!status.isGranted) {
-        print('Location permission denied/permanently denied. Prompting user...');
         if (!mounted) return;
         
         // Show dialog to explain why we need permissions
@@ -131,7 +130,6 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
 
   @override
   Widget build(BuildContext context) {
-    print('MapScreen: build called');
     final markersState = ref.watch(mapControllerProvider);
     final currentCue = ref.watch(playbackServiceProvider).value;
 
@@ -220,6 +218,7 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
               return Stack(
                 children: [
                    GoogleMap(
+                    key: _mapKey, // Use GlobalKey to persist map across rebuilds
                     markers: currentMarkers,
                     initialCameraPosition: _initialCameraPosition,
                     myLocationEnabled: true,
