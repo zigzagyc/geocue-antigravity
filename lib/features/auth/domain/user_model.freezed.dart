@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserModel {
 
- String get id; String get email; String? get displayName; String? get photoUrl;
+ String get id; String get email; String? get displayName; String? get photoUrl; bool get isAdmin; bool get canCreateCues; bool get isDisabled;
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $UserModelCopyWith<UserModel> get copyWith => _$UserModelCopyWithImpl<UserModel>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin)&&(identical(other.canCreateCues, canCreateCues) || other.canCreateCues == canCreateCues)&&(identical(other.isDisabled, isDisabled) || other.isDisabled == isDisabled));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,email,displayName,photoUrl);
+int get hashCode => Object.hash(runtimeType,id,email,displayName,photoUrl,isAdmin,canCreateCues,isDisabled);
 
 @override
 String toString() {
-  return 'UserModel(id: $id, email: $email, displayName: $displayName, photoUrl: $photoUrl)';
+  return 'UserModel(id: $id, email: $email, displayName: $displayName, photoUrl: $photoUrl, isAdmin: $isAdmin, canCreateCues: $canCreateCues, isDisabled: $isDisabled)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $UserModelCopyWith<$Res>  {
   factory $UserModelCopyWith(UserModel value, $Res Function(UserModel) _then) = _$UserModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String email, String? displayName, String? photoUrl
+ String id, String email, String? displayName, String? photoUrl, bool isAdmin, bool canCreateCues, bool isDisabled
 });
 
 
@@ -65,13 +65,16 @@ class _$UserModelCopyWithImpl<$Res>
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? displayName = freezed,Object? photoUrl = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? displayName = freezed,Object? photoUrl = freezed,Object? isAdmin = null,Object? canCreateCues = null,Object? isDisabled = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,displayName: freezed == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
 as String?,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isAdmin: null == isAdmin ? _self.isAdmin : isAdmin // ignore: cast_nullable_to_non_nullable
+as bool,canCreateCues: null == canCreateCues ? _self.canCreateCues : canCreateCues // ignore: cast_nullable_to_non_nullable
+as bool,isDisabled: null == isDisabled ? _self.isDisabled : isDisabled // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -156,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String? displayName,  String? photoUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String? displayName,  String? photoUrl,  bool isAdmin,  bool canCreateCues,  bool isDisabled)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserModel() when $default != null:
-return $default(_that.id,_that.email,_that.displayName,_that.photoUrl);case _:
+return $default(_that.id,_that.email,_that.displayName,_that.photoUrl,_that.isAdmin,_that.canCreateCues,_that.isDisabled);case _:
   return orElse();
 
 }
@@ -177,10 +180,10 @@ return $default(_that.id,_that.email,_that.displayName,_that.photoUrl);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String? displayName,  String? photoUrl)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String? displayName,  String? photoUrl,  bool isAdmin,  bool canCreateCues,  bool isDisabled)  $default,) {final _that = this;
 switch (_that) {
 case _UserModel():
-return $default(_that.id,_that.email,_that.displayName,_that.photoUrl);case _:
+return $default(_that.id,_that.email,_that.displayName,_that.photoUrl,_that.isAdmin,_that.canCreateCues,_that.isDisabled);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +200,10 @@ return $default(_that.id,_that.email,_that.displayName,_that.photoUrl);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String? displayName,  String? photoUrl)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String? displayName,  String? photoUrl,  bool isAdmin,  bool canCreateCues,  bool isDisabled)?  $default,) {final _that = this;
 switch (_that) {
 case _UserModel() when $default != null:
-return $default(_that.id,_that.email,_that.displayName,_that.photoUrl);case _:
+return $default(_that.id,_that.email,_that.displayName,_that.photoUrl,_that.isAdmin,_that.canCreateCues,_that.isDisabled);case _:
   return null;
 
 }
@@ -212,13 +215,16 @@ return $default(_that.id,_that.email,_that.displayName,_that.photoUrl);case _:
 @JsonSerializable()
 
 class _UserModel implements UserModel {
-  const _UserModel({required this.id, required this.email, this.displayName, this.photoUrl});
+  const _UserModel({required this.id, required this.email, this.displayName, this.photoUrl, this.isAdmin = false, this.canCreateCues = true, this.isDisabled = false});
   factory _UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 
 @override final  String id;
 @override final  String email;
 @override final  String? displayName;
 @override final  String? photoUrl;
+@override@JsonKey() final  bool isAdmin;
+@override@JsonKey() final  bool canCreateCues;
+@override@JsonKey() final  bool isDisabled;
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +239,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin)&&(identical(other.canCreateCues, canCreateCues) || other.canCreateCues == canCreateCues)&&(identical(other.isDisabled, isDisabled) || other.isDisabled == isDisabled));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,email,displayName,photoUrl);
+int get hashCode => Object.hash(runtimeType,id,email,displayName,photoUrl,isAdmin,canCreateCues,isDisabled);
 
 @override
 String toString() {
-  return 'UserModel(id: $id, email: $email, displayName: $displayName, photoUrl: $photoUrl)';
+  return 'UserModel(id: $id, email: $email, displayName: $displayName, photoUrl: $photoUrl, isAdmin: $isAdmin, canCreateCues: $canCreateCues, isDisabled: $isDisabled)';
 }
 
 
@@ -253,7 +259,7 @@ abstract mixin class _$UserModelCopyWith<$Res> implements $UserModelCopyWith<$Re
   factory _$UserModelCopyWith(_UserModel value, $Res Function(_UserModel) _then) = __$UserModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String email, String? displayName, String? photoUrl
+ String id, String email, String? displayName, String? photoUrl, bool isAdmin, bool canCreateCues, bool isDisabled
 });
 
 
@@ -270,13 +276,16 @@ class __$UserModelCopyWithImpl<$Res>
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? displayName = freezed,Object? photoUrl = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? displayName = freezed,Object? photoUrl = freezed,Object? isAdmin = null,Object? canCreateCues = null,Object? isDisabled = null,}) {
   return _then(_UserModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,displayName: freezed == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
 as String?,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isAdmin: null == isAdmin ? _self.isAdmin : isAdmin // ignore: cast_nullable_to_non_nullable
+as bool,canCreateCues: null == canCreateCues ? _self.canCreateCues : canCreateCues // ignore: cast_nullable_to_non_nullable
+as bool,isDisabled: null == isDisabled ? _self.isDisabled : isDisabled // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

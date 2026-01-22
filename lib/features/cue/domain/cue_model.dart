@@ -8,6 +8,7 @@ part 'cue_model.g.dart';
 abstract class CueModel with _$CueModel {
   const factory CueModel({
     required String id,
+    @Default('') String ownerId,
     required String title,
     String? description,
     required String audioUrl,

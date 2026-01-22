@@ -15,6 +15,36 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  
+  bool _canRegisterAsAdmin = false;
+  bool _wantsToBeAdmin = false;
+  bool _checkingAdminStatus = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAdminAvailability();
+  }
+
+  Future<void> _checkAdminAvailability() async {
+    try {
+      final hasAdmin = await ref.read(authControllerProvider.notifier).checkAnyAdminExists();
+      if (mounted) {
+        setState(() {
+          _canRegisterAsAdmin = !hasAdmin;
+          _checkingAdminStatus = false;
+        });
+      }
+    } catch (e) {
+      // If check fails (e.g. offline), default to false for safety or true if we want to be permissive?
+      // Default false safely.
+      if (mounted) {
+         setState(() {
+           _checkingAdminStatus = false;
+         });
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -35,6 +65,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       ref.read(authControllerProvider.notifier).signUp(
             _emailController.text.trim(),
             _passwordController.text.trim(),
+            asAdmin: _wantsToBeAdmin,
           );
     }
   }
@@ -84,6 +115,21 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 validator: (value) =>
                     value == null || value.isEmpty ? 'Please enter password' : null,
               ),
+              
+              if (!_checkingAdminStatus && _canRegisterAsAdmin) ...[
+                const SizedBox(height: 16),
+                CheckboxListTile(
+                  title: const Text('Register as System Administrator?'),
+                  subtitle: const Text('You will be the first admin and have full control.'),
+                  value: _wantsToBeAdmin,
+                  onChanged: (val) {
+                    setState(() {
+                      _wantsToBeAdmin = val ?? false;
+                    });
+                  },
+                ),
+              ],
+              
               const SizedBox(height: 24),
               if (state.isLoading)
                 const CircularProgressIndicator()

@@ -10,6 +10,9 @@ import '../features/cue/presentation/create_cue_screen.dart';
 import '../features/cue/presentation/edit_cue_screen.dart';
 import '../features/cue/domain/cue_model.dart';
 import '../features/home/presentation/home_screen.dart';
+import '../features/admin/presentation/admin_user_list_screen.dart';
+import '../features/admin/presentation/locked_area_list_screen.dart';
+import '../features/admin/presentation/create_locked_area_screen.dart';
 
 part 'router.g.dart';
 
@@ -64,6 +67,20 @@ GoRouter router(Ref ref) {
           final cue = state.extra as CueModel;
           return EditCueScreen(cue: cue);
         },
+      ),
+      GoRoute(
+        path: '/admin',
+        builder: (context, state) => const AdminUserListScreen(),
+        routes: [
+           GoRoute(
+            path: 'locked-areas',
+            builder: (context, state) => const LockedAreaListScreen(),
+          ),
+          GoRoute(
+            path: 'create-locked-area',
+            builder: (context, state) => const CreateLockedAreaScreen(),
+          ),
+        ],
       ),
     ],
   );

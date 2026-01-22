@@ -8,6 +8,7 @@ part of 'cue_model.dart';
 
 _CueModel _$CueModelFromJson(Map<String, dynamic> json) => _CueModel(
   id: json['id'] as String,
+  ownerId: json['ownerId'] as String? ?? '',
   title: json['title'] as String,
   description: json['description'] as String?,
   audioUrl: json['audioUrl'] as String,
@@ -27,6 +28,7 @@ _CueModel _$CueModelFromJson(Map<String, dynamic> json) => _CueModel(
 
 Map<String, dynamic> _$CueModelToJson(_CueModel instance) => <String, dynamic>{
   'id': instance.id,
+  'ownerId': instance.ownerId,
   'title': instance.title,
   'description': instance.description,
   'audioUrl': instance.audioUrl,

@@ -10,6 +10,9 @@ abstract class UserModel with _$UserModel {
     required String email,
     String? displayName,
     String? photoUrl,
+    @Default(false) bool isAdmin,
+    @Default(true) bool canCreateCues,
+    @Default(false) bool isDisabled,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

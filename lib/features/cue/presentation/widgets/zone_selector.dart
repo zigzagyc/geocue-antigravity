@@ -8,7 +8,7 @@ class ZoneSelector extends StatefulWidget {
   final double initialRadius;
   final String initialZoneType;
   final List<Map<String, double>>? initialPolygonPoints;
-  final Function(double radius, String zoneType, List<Map<String, double>>? polygonPoints) onZoneChanged;
+  final Function(double lat, double lng, double radius, String zoneType, List<Map<String, double>>? polygonPoints) onZoneChanged;
 
   const ZoneSelector({
     super.key,
@@ -30,13 +30,18 @@ class _ZoneSelectorState extends State<ZoneSelector> {
   final Set<Polygon> _polygons = {};
   final Set<Polyline> _polylines = {}; // For drawing feedback
 
+  late double _lat;
+  late double _lng;
   late double _radius;
   late bool _isPolygonMode;
   final List<LatLng> _polygonPoints = [];
+  GoogleMapController? _mapController;
   
   @override
   void initState() {
     super.initState();
+    _lat = widget.initialLat;
+    _lng = widget.initialLng;
     _radius = widget.initialRadius;
     _isPolygonMode = widget.initialZoneType == 'polygon';
     if (widget.initialPolygonPoints != null) {
@@ -56,25 +61,22 @@ class _ZoneSelectorState extends State<ZoneSelector> {
   void _updateCircle() {
     setState(() {
       _circles.clear();
+      _markers.clear(); // Clear other markers
       if (!_isPolygonMode) {
         _circles.add(
           Circle(
             circleId: const CircleId('zone_circle'),
-            center: LatLng(widget.initialLat, widget.initialLng),
+            center: LatLng(_lat, _lng),
             radius: _radius,
             fillColor: Colors.blue.withValues(alpha: 0.2),
             strokeColor: Colors.blue,
             strokeWidth: 2,
           ),
         );
-        // Also update marker center
-        _markers.clear();
-        _markers.add(
-           Marker(
-             markerId: const MarkerId('center'),
-             position: LatLng(widget.initialLat, widget.initialLng),
-           ),
-        );
+        // Center marker is now static in the UI center, so we don't necessarily need a map marker unless we want to persist it.
+        // Actually, for "move map to select", usually there's a static pin. 
+        // But let's keep a marker if we want, OR just rely on the circle. 
+        // Let's rely on the circle and maybe a center icon overlay.
       }
     });
     _notifyParent();
@@ -131,9 +133,9 @@ class _ZoneSelectorState extends State<ZoneSelector> {
   void _notifyParent() {
     if (_isPolygonMode) {
       final points = _polygonPoints.map((p) => {'lat': p.latitude, 'lng': p.longitude}).toList();
-      widget.onZoneChanged(_radius, 'polygon', points);
+      widget.onZoneChanged(_lat, _lng, _radius, 'polygon', points);
     } else {
-      widget.onZoneChanged(_radius, 'circle', null);
+      widget.onZoneChanged(_lat, _lng, _radius, 'circle', null);
     }
   }
 
@@ -149,8 +151,11 @@ class _ZoneSelectorState extends State<ZoneSelector> {
   void _clearPolygon() {
     setState(() {
       _polygonPoints.clear();
+      _polygons.clear();
+      _polylines.clear();
+      _markers.clear();
     });
-    _updatePolygon();
+    _notifyParent(); // Update parent with empty
   }
 
   @override
@@ -224,21 +229,68 @@ class _ZoneSelectorState extends State<ZoneSelector> {
         // Map
         SizedBox(
           height: 300,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: LatLng(widget.initialLat, widget.initialLng),
-                zoom: 17,
+          child: Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(widget.initialLat, widget.initialLng),
+                    zoom: 17,
+                  ),
+                  markers: _markers,
+                  circles: _circles,
+                  polygons: _polygons,
+                  polylines: _polylines,
+                  onTap: _onMapTap,
+                  myLocationEnabled: false, 
+                  onMapCreated: (controller) {
+                    _mapController = controller;
+                  },
+                  onCameraMove: (position) {
+                    if (!_isPolygonMode) {
+                      _lat = position.target.latitude;
+                      _lng = position.target.longitude;
+                       // We don't setState here to avoid lag, but we update the internal state
+                       // visual circle is static in center? No, circle moves with map? 
+                       // Actually, if we want "screen center" selection, the circle should stay at screen center.
+                       // But the GoogleMap `circles` set is geolocated. So we MUST update it.
+                       // Updating circle on every frame might be expensive. 
+                       // Standard pattern: Marker fixed at center of screen (Overlay), map moves under it.
+                    }
+                  },
+                  onCameraIdle: () {
+                     if (!_isPolygonMode) {
+                       _updateCircle(); // Update the geolocated circle when dragging stops
+                     }
+                  },
+                  zoomControlsEnabled: true,
+                ),
               ),
-              markers: _markers,
-              circles: _circles,
-              polygons: _polygons,
-              polylines: _polylines,
-              onTap: _onMapTap,
-              myLocationEnabled: false, // We use the fixed center for creation
-              zoomControlsEnabled: true,
-            ),
+              // Center Marker Overlay for Circle Mode
+              if (!_isPolygonMode)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 30), // Lift up slightly to match pin point
+                    child: Icon(Icons.location_on, size: 40, color: Colors.blue),
+                  ),
+                ),
+                
+              // Recenter Button
+              Positioned(
+                top: 10,
+                right: 10,
+                child: FloatingActionButton.small(
+                  backgroundColor: Colors.white,
+                  child: const Icon(Icons.center_focus_strong, color: Colors.black),
+                  onPressed: () {
+                     _mapController?.animateCamera(
+                       CameraUpdate.newLatLng(LatLng(widget.initialLat, widget.initialLng))
+                     );
+                  },
+                ),
+              ),
+            ],
           ),
         ),
         if (_isPolygonMode && _polygonPoints.length < 3)

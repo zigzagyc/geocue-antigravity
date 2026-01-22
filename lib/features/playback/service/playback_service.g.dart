@@ -33,7 +33,7 @@ final class PlaybackServiceProvider
   PlaybackService create() => PlaybackService();
 }
 
-String _$playbackServiceHash() => r'70eb6276b4194093ce739c5eba80b06c6ca2f293';
+String _$playbackServiceHash() => r'db0e134ef142af89b17980a8542878416138e93b';
 
 abstract class _$PlaybackService extends $AsyncNotifier<CueModel?> {
   FutureOr<CueModel?> build();

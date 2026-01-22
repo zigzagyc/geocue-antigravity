@@ -7,6 +7,7 @@ part 'cue_repository.g.dart';
 abstract class CueRepository {
   Future<void> createCue(CueModel cue);
   Future<List<CueModel>> getCues();
+  Future<CueModel?> getCue(String id);
   Future<void> updateCue(CueModel cue);
   Future<void> deleteCue(String cueId);
   Stream<List<CueModel>> watchCues();
@@ -28,13 +29,22 @@ class FirestoreCueRepository implements CueRepository {
   }
 
   @override
+  Future<CueModel?> getCue(String id) async {
+    final doc = await _firestore.collection('cues').doc(id).get();
+    if (doc.exists) {
+      return CueModel.fromJson(doc.data()!);
+    }
+    return null;
+  }
+
+  @override
   Future<void> updateCue(CueModel cue) async {
-      await _firestore.collection('cues').doc(cue.id).update(cue.toJson());
+    await _firestore.collection('cues').doc(cue.id).update(cue.toJson());
   }
 
   @override
   Future<void> deleteCue(String cueId) async {
-      await _firestore.collection('cues').doc(cueId).delete();
+    await _firestore.collection('cues').doc(cueId).delete();
   }
 
   @override
@@ -59,6 +69,15 @@ class MockCueRepository implements CueRepository {
     Future<List<CueModel>> getCues() async {
         await Future.delayed(const Duration(milliseconds: 500));
         return _cues;
+    }
+
+    @override
+    Future<CueModel?> getCue(String id) async {
+        try {
+          return _cues.firstWhere((c) => c.id == id);
+        } catch (e) {
+          return null;
+        }
     }
 
     @override

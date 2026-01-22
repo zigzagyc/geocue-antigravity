@@ -255,7 +255,11 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
           FloatingActionButton(
             heroTag: 'add_cue',
             onPressed: () {
-              context.push('/create-cue');
+              final target = _initialCameraPosition.target;
+              context.push(Uri(path: '/create-cue', queryParameters: {
+                'lat': target.latitude.toString(),
+                'lng': target.longitude.toString(),
+              }).toString());
             },
             child: const Icon(Icons.add_location_alt),
           ),

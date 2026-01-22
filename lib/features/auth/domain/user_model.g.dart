@@ -11,6 +11,9 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
   email: json['email'] as String,
   displayName: json['displayName'] as String?,
   photoUrl: json['photoUrl'] as String?,
+  isAdmin: json['isAdmin'] as bool? ?? false,
+  canCreateCues: json['canCreateCues'] as bool? ?? true,
+  isDisabled: json['isDisabled'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
@@ -19,4 +22,7 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'email': instance.email,
       'displayName': instance.displayName,
       'photoUrl': instance.photoUrl,
+      'isAdmin': instance.isAdmin,
+      'canCreateCues': instance.canCreateCues,
+      'isDisabled': instance.isDisabled,
     };

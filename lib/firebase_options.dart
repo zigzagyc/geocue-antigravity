@@ -45,6 +45,7 @@ class DefaultFirebaseOptions {
         );
     }
   }
+  //Use the section in wechat to replace this place holder
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAG70ICwpL-u81oH0QWdz3fcMiDnLQdYN8',

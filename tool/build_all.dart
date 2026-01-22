@@ -15,7 +15,7 @@ void main() async {
   print('Starting comprehensive release build for $appName... (Resuming)');
 
   // 1. Android
-  // await buildAndroid(distDir);
+  await buildAndroid(distDir);
 
   // 2. Web
   // await buildWeb(distDir);

@@ -21,11 +21,26 @@ class CreateCueScreen extends ConsumerWidget {
 
     final state = ref.watch(createCueControllerProvider);
     final isLoading = state.isLoading;
+    
+    // Get query params if available
+    final GoRouterState routerState = GoRouterState.of(context);
+    final String? latParam = routerState.uri.queryParameters['lat'];
+    final String? lngParam = routerState.uri.queryParameters['lng'];
+    
+    double? initialLat;
+    double? initialLng;
+    
+    if (latParam != null && lngParam != null) {
+      initialLat = double.tryParse(latParam);
+      initialLng = double.tryParse(lngParam);
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Create New Cue')),
       body: CueForm(
         isLoading: isLoading,
+        initialLat: initialLat,
+        initialLng: initialLng,
         onSave: ({
           required title,
           required description,

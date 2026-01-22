@@ -48,7 +48,7 @@ final class AuthRepositoryProvider
   }
 }
 
-String _$authRepositoryHash() => r'8222571bd56b7d4a99b21404b3e87bf94f4fe31c';
+String _$authRepositoryHash() => r'37eda5f0d4d9451cb8f00c078a8783bbe2277f26';
 
 @ProviderFor(authStateChanges)
 const authStateChangesProvider = AuthStateChangesProvider._();
@@ -82,3 +82,41 @@ final class AuthStateChangesProvider
 }
 
 String _$authStateChangesHash() => r'f95512f3016c4609549bf37ef775d5ac547a7179';
+
+@ProviderFor(currentUserModel)
+const currentUserModelProvider = CurrentUserModelProvider._();
+
+final class CurrentUserModelProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<UserModel?>,
+          UserModel?,
+          Stream<UserModel?>
+        >
+    with $FutureModifier<UserModel?>, $StreamProvider<UserModel?> {
+  const CurrentUserModelProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'currentUserModelProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$currentUserModelHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<UserModel?> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<UserModel?> create(Ref ref) {
+    return currentUserModel(ref);
+  }
+}
+
+String _$currentUserModelHash() => r'3947d62c50f8d3fe43cfdb085058a9c9b89784d9';

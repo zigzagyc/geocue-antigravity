@@ -58,6 +58,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             children: [
               TextFormField(
                 controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) =>
                     value == null || value.isEmpty ? 'Please enter email' : null,
@@ -81,6 +82,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   },
                   child: const Text('Login'),
                 ),
+              TextButton(
+                onPressed: () async {
+                   final email = _emailController.text.trim();
+                   // More permissive regex: Anything @ Anything . Anything
+                   final emailRegex = RegExp(r"^[^@]+@[^@]+\.[^@]+");
+                   
+                   if (email.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter your email to reset password')));
+                      return;
+                   }
+                   if (!emailRegex.hasMatch(email)) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid email format. Please check for types.')));
+                      return;
+                   }
+                   
+                   try {
+                     await ref.read(authControllerProvider.notifier).resetPassword(email);
+                     if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password reset email sent! Check your inbox.')));
+                     }
+                   } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                      }
+                   }
+                },
+                child: const Text('Forgot Password?'),
+              ),
               TextButton(
                 onPressed: () => context.push('/signup'),
                 child: const Text('Create an account'),

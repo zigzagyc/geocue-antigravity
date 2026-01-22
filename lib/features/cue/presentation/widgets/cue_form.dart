@@ -23,9 +23,14 @@ class CueForm extends StatefulWidget {
     List<Map<String, double>>? polygonPoints,
   }) onSave;
 
+  final double? initialLat;
+  final double? initialLng;
+
   const CueForm({
     super.key,
     this.initialCue,
+    this.initialLat,
+    this.initialLng,
     required this.isLoading,
     required this.onSave,
   });
@@ -61,16 +66,6 @@ class _CueFormState extends State<CueForm> {
       final cue = widget.initialCue!;
       _titleController.text = cue.title;
       _descriptionController.text = cue.description ?? '';
-      
-      // Determine mode based on cue data (simplified logic for now)
-      // Ideally we should know if it was created from text or audio, but for now 
-      // if it has an audioUrl, we might treat it as audio mode for editing ONLY if we supported re-recording.
-      // For now, let's assume editing is flexible. 
-      // If we are editing, we might want to default to the existing type.
-      // But we don't store "isAudioMode" explicitly. 
-      // Let's check if description matches text content logic or if it's separate.
-      // For this implementation, let's default to Text unless we want to allow replacing audio.
-      // If the user wants to replace audio, they can switch to audio mode.
       _isAudioMode = false; 
       
       _currentPosition = Position(
@@ -89,6 +84,21 @@ class _CueFormState extends State<CueForm> {
       _radius = cue.radius;
       _zoneType = cue.zoneType;
       _polygonPoints = cue.polygonPoints;
+      _isLoadingLocation = false;
+    } else if (widget.initialLat != null && widget.initialLng != null) {
+      _currentPosition = Position(
+        longitude: widget.initialLng!,
+        latitude: widget.initialLat!,
+        timestamp: DateTime.now(),
+        accuracy: 0,
+        altitude: 0,
+        altitudeAccuracy: 0,
+        heading: 0,
+        headingAccuracy: 0,
+        speed: 0,
+        speedAccuracy: 0,
+        isMocked: false
+      );
       _isLoadingLocation = false;
     } else {
       await _getCurrentLocation();
@@ -181,22 +191,6 @@ class _CueFormState extends State<CueForm> {
     }
 
     if (_isAudioMode) {
-      if (_audioPath == null && widget.initialCue == null) {
-        // If creating new, must have audio.
-        // If editing, maybe we keep existing audio if not replaced?
-        // For now, let's behave as if we need new audio if specific mode is selected?
-        // Let's refine: If editing and user didn't record new audio, pass null audioPath.
-      } else if (_audioPath == null && widget.initialCue != null) {
-         // User didn't record new audio, maybe they just wanted to edit title/location?
-         // In update logic, null audioPath might mean "keep existing".
-      }
-      
-      // Wait, complex logic here. Let's simplify.
-      // If mode is audio:
-      // - New: Must record.
-      // - Edit: Can record to replace. If not recorded, assume keep existing? 
-      // BUT `onSave` interface separation:
-      
       if (_audioPath == null && widget.initialCue == null) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please record audio first')));
           return;
@@ -330,8 +324,21 @@ class _CueFormState extends State<CueForm> {
              initialRadius: _radius,
              initialZoneType: _zoneType,
              initialPolygonPoints: _polygonPoints,
-             onZoneChanged: (radius, type, points) {
+             onZoneChanged: (lat, lng, radius, type, points) {
                setState(() {
+                 _currentPosition = Position(
+                    longitude: lng,
+                    latitude: lat,
+                    timestamp: DateTime.now(),
+                    accuracy: 0,
+                    altitude: 0,
+                    altitudeAccuracy: 0,
+                    heading: 0,
+                    headingAccuracy: 0,
+                    speed: 0,
+                    speedAccuracy: 0,
+                    isMocked: false
+                  );
                  _radius = radius;
                  _zoneType = type;
                  _polygonPoints = points;
