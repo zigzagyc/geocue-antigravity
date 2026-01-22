@@ -59,6 +59,7 @@ class CueListScreen extends ConsumerWidget {
                     ),
                     if (currentUser.value != null && (currentUser.value!.id == cue.ownerId || currentUser.value!.isAdmin)) ...[
                       if (currentUser.value!.isAdmin)
+                      if (currentUser.value!.isAdmin)
                         IconButton(
                           icon: const Icon(Icons.lock_outline, color: Colors.orange),
                           tooltip: 'Lock this location',
@@ -115,12 +116,12 @@ class CueListScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('Error: $err')),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: currentUser.value != null ? FloatingActionButton(
         onPressed: () {
            context.push('/create-cue');
         },
         child: const Icon(Icons.add),
-      ),
+      ) : null,
     );
   }
 }

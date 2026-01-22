@@ -31,12 +31,30 @@ GoRouter router(Ref ref) {
       
       return authState.when(
         data: (user) {
-          final isLoggingIn = state.uri.path == '/login' || state.uri.path == '/signup';
-          if (user == null && !isLoggingIn) return '/login';
-          if (user != null && isLoggingIn) return '/';
+          final path = state.uri.path;
+          final isLoggingIn = path == '/login' || path == '/signup';
+          
+          // GUEST ACCESS LOGIC
+          if (user == null) {
+            // Allow public routes
+            if (path == '/' || path == '/splash' || isLoggingIn) {
+               return null;
+            }
+            // Block protected routes
+            if (path.startsWith('/create-cue') || path.startsWith('/edit-cue') || path.startsWith('/admin')) {
+               return '/login';
+            }
+            // Allow any other route? Default to safe map view (home)
+            return null; 
+          }
+
+          // LOGGED IN LOGIC
+          // If logged in and trying to go to login/signup, redirect to home
+          if (isLoggingIn) return '/';
+          
           return null;
         },
-        error: (_, __) => '/login',
+        error: (_, __) => '/login', // Fallback on auth error
         loading: () => '/splash',
       );
     },

@@ -9,6 +9,7 @@ import 'package:hearhere/features/map/presentation/map_controller.dart';
 import 'package:hearhere/features/playback/service/proximity_service.dart';
 import 'package:hearhere/features/playback/service/playback_service.dart';
 import 'package:hearhere/features/auth/presentation/auth_controller.dart';
+import 'package:hearhere/features/auth/data/auth_repository.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
@@ -144,12 +145,18 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(mapControllerProvider.notifier).refreshCues(),
           ),
+          // Guest Mode Login / Logout Toggle
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: Icon(ref.watch(authStateChangesProvider).value != null ? Icons.logout : Icons.login),
             onPressed: () async {
-              await ref.read(authControllerProvider.notifier).signOut();
-              if (context.mounted) {
-                 context.go('/login'); // Assuming '/login' is the route name
+              final auth = ref.read(authControllerProvider.notifier);
+              final isLoggedIn = ref.read(authStateChangesProvider).value != null;
+              
+              if (isLoggedIn) {
+                 await auth.signOut();
+                 if (context.mounted) context.go('/login');
+              } else {
+                 context.go('/login');
               }
             },
           ),
@@ -225,46 +232,53 @@ class _MapScreenState extends ConsumerState<MapScreen> with WidgetsBindingObserv
             ),
         ],
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            heroTag: 'my_location',
-            onPressed: () async {
-              try {
-                final position = await Geolocator.getCurrentPosition();
-                _mapController?.animateCamera(
-                  CameraUpdate.newCameraPosition(
-                    CameraPosition(
-                      target: LatLng(position.latitude, position.longitude),
-                      zoom: 15,
-                    ),
-                  ),
-                );
-              } catch (e) {
-                if (context.mounted) {
-                   ScaffoldMessenger.of(context).showSnackBar(
-                     SnackBar(content: Text('Could not get location: $e')),
-                   );
-                }
-              }
-            },
-            child: const Icon(Icons.my_location),
-          ),
-          const SizedBox(height: 16),
-          FloatingActionButton(
-            heroTag: 'add_cue',
-            onPressed: () {
-              final target = _initialCameraPosition.target;
-              context.push(Uri(path: '/create-cue', queryParameters: {
-                'lat': target.latitude.toString(),
-                'lng': target.longitude.toString(),
-              }).toString());
-            },
-            child: const Icon(Icons.add_location_alt),
-          ),
-        ],
+
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'my_location',
+        onPressed: () async {
+          try {
+            final position = await Geolocator.getCurrentPosition();
+            _mapController?.animateCamera(
+              CameraUpdate.newCameraPosition(
+                CameraPosition(
+                  target: LatLng(position.latitude, position.longitude),
+                  zoom: 15,
+                ),
+              ),
+            );
+          } catch (e) {
+            if (context.mounted) {
+               ScaffoldMessenger.of(context).showSnackBar(
+                 SnackBar(content: Text('Could not get location: $e')),
+               );
+            }
+          }
+        },
+        child: const Icon(Icons.my_location),
       ),
+      // Only show Add Cue if logged in
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      bottomNavigationBar: (ref.watch(authStateChangesProvider).value != null)
+        ? Padding(
+             padding: const EdgeInsets.only(bottom: 16, right: 16),
+             child: Row(
+               mainAxisAlignment: MainAxisAlignment.end,
+               children: [
+                 FloatingActionButton(
+                    heroTag: 'add_cue',
+                    onPressed: () {
+                      final target = _initialCameraPosition.target;
+                      context.push(Uri(path: '/create-cue', queryParameters: {
+                        'lat': target.latitude.toString(),
+                        'lng': target.longitude.toString(),
+                      }).toString());
+                    },
+                    child: const Icon(Icons.add_location_alt),
+                 ),
+               ],
+             ),
+          )
+        : null, 
     );
   }
 }

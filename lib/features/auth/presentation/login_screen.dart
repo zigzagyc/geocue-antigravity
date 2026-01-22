@@ -114,6 +114,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 onPressed: () => context.push('/signup'),
                 child: const Text('Create an account'),
               ),
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                icon: const Icon(Icons.map_outlined),
+                label: const Text('Continue as Guest'),
+                onPressed: () => context.go('/'),
+              ),
             ],
           ),
         ),
