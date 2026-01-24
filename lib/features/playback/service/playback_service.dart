@@ -97,6 +97,16 @@ class PlaybackService extends _$PlaybackService {
           case 'ko': locale = 'ko-KR'; break;
         }
         
+        bool isAvailable = await _tts.isLanguageAvailable(locale);
+        if (!isAvailable) {
+          // Fallback to English if the specific language is not installed/supported
+          locale = 'en-US';
+          // Double check generic english
+          if (!(await _tts.isLanguageAvailable(locale))) {
+             locale = 'en';
+          }
+        }
+        
         await _tts.setLanguage(locale);
         await _tts.speak(text);
       }
