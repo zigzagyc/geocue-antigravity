@@ -33,7 +33,7 @@ final class PreferredLanguageProvider
   PreferredLanguage create() => PreferredLanguage();
 }
 
-String _$preferredLanguageHash() => r'74046b3cd56d12923cb5ee7605dce227195cb2d2';
+String _$preferredLanguageHash() => r'd4cce8bc84d33c4ac29d71c34e23042426a7413e';
 
 abstract class _$PreferredLanguage extends $AsyncNotifier<String> {
   FutureOr<String> build();

@@ -43,21 +43,29 @@ class _CreateLockedAreaScreenState extends ConsumerState<CreateLockedAreaScreen>
     }
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (_reasonController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please provide a reason')));
       return;
     }
 
-    ref.read(adminControllerProvider.notifier).createLockedArea(
-      latitude: _lat,
-      longitude: _lng,
-      radius: _radius,
-      reason: _reasonController.text,
-    );
-    
-    context.pop();
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Area Locked Successfully')));
+    try {
+      await ref.read(adminControllerProvider.notifier).createLockedArea(
+        latitude: _lat,
+        longitude: _lng,
+        radius: _radius,
+        reason: _reasonController.text,
+      );
+      
+      if (mounted) {
+        context.pop();
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Area Locked Successfully')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    }
   }
 
   @override

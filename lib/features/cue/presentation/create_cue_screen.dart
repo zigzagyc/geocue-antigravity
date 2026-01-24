@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'create_cue_controller.dart';
 import 'widgets/cue_form.dart';
+import 'package:hearhere/features/settings/presentation/model_selection_dialog.dart';
 
 class CreateCueScreen extends ConsumerWidget {
   const CreateCueScreen({super.key});
@@ -11,7 +12,21 @@ class CreateCueScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen<AsyncValue<void>>(createCueControllerProvider, (previous, state) {
        if (state.hasError) {
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error.toString())));
+         final error = state.error;
+         if (error.toString().contains('AiModelNotFoundException')) {
+           showDialog(
+             context: context,
+             barrierDismissible: false,
+             builder: (context) => ModelSelectionDialog(
+               onRetry: () {
+                 // Retry logic could be more sophisticated, but for now we let user hit "Save" again.
+                 // Ideally, we might want to auto-retry.
+               },
+             ),
+           );
+         } else {
+           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error.toString())));
+         }
        }
        if (!state.isLoading && !state.hasError && previous?.isLoading == true) {
          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cue Created!')));

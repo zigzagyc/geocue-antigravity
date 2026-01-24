@@ -110,3 +110,19 @@ When collaborating on this project from other machines:
 
 ---
 *End of Log. Last Updated: Dec 28, 2025.*
+
+### Jan 22, 2026: FDA-201 (iPhone 13) Release
+**User Vibe (Prompt):** "run release on FDA-201" -> "Run release on iPhone13"
+
+**Agent Action (Plan):**
+*   **Identification:** Clarified FDA-201 as the user's iPhone 13.
+*   **Execution:** Initiated `flutter run --release` on device `00008110-001C71540C82601E`.
+*   **Outcome:**
+    *   **Attempt 1:** Build completed, but wireless launch failed.
+    *   **Attempt 2:** Retry successful. App launched on iPhone 13.
+    *   **Dynamic AI Selection Implementation:** Added `AiSettingsRepository`, `ModelSelectionDialog`, and updated `AiService` to handle model failures.
+    *   **Final Release Run:** Build passed, but auto-launch failed (Exit Code 2). Requires manual launch or device unlock.
+    *   **Fix Applied:** Ran `build_runner` to generate missing files for `AiSettingsRepository`. Re-build successful (compilation-wise), launch still requires manual intervention.
+
+---
+*End of Log. Last Updated: Jan 22, 2026.*

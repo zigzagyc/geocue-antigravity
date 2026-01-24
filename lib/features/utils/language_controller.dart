@@ -42,11 +42,7 @@ class PreferredLanguage extends _$PreferredLanguage {
       // 2. Save to User Profile if logged in
       final user = ref.read(authRepositoryProvider).currentUser;
       if (user != null) {
-        // We need a method to update just the language, or generic update
-        // We added updateUserStatus but that was for admin flags. 
-        // We might need to add `updatePreferredLanguage` to AuthRepo or do it here directly via Firestore.
-        // For speed, let's use a new method or direct Firestore (not ideal but quick).
-        // Check AuthRepository first.
+        await ref.read(authRepositoryProvider).updatePreferredLanguage(user.uid, languageCode);
       }
       return languageCode;
     });

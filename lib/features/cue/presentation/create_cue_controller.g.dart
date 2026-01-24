@@ -34,7 +34,7 @@ final class CreateCueControllerProvider
 }
 
 String _$createCueControllerHash() =>
-    r'c16c87e83d11d5cc9392e7d9e19579f2a0178d2e';
+    r'82332186ef886158a5b17dd76c1c1ec83cfbf00f';
 
 abstract class _$CreateCueController extends $AsyncNotifier<void> {
   FutureOr<void> build();

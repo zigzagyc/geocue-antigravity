@@ -15,6 +15,7 @@ abstract class AuthRepository {
   Future<bool> checkAnyAdminExists();
   Future<List<UserModel>> getAllUsers();
   Future<void> updateUserStatus(String uid, {bool? isDisabled, bool? canCreateCues, bool? isAdmin});
+  Future<void> updatePreferredLanguage(String uid, String languageCode);
   Future<void> sendPasswordResetEmail(String email);
 }
 
@@ -87,6 +88,13 @@ class FirebaseAuthRepository implements AuthRepository {
     if (updates.isNotEmpty) {
       await _firestore.collection('users').doc(uid).update(updates);
     }
+  }
+
+  @override
+  Future<void> updatePreferredLanguage(String uid, String languageCode) async {
+    await _firestore.collection('users').doc(uid).update({
+      'preferredLanguage': languageCode,
+    });
   }
 
   @override

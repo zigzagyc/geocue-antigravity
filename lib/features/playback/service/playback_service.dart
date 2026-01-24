@@ -84,6 +84,20 @@ class PlaybackService extends _$PlaybackService {
       } else {
         // Text Cue (TTS)
         final text = cue.description ?? cue.title;
+        
+        // Map short codes to full locales for better TTS quality
+        String locale = cue.language;
+        switch (cue.language) {
+          case 'zh': locale = 'zh-CN'; break;
+          case 'en': locale = 'en-US'; break; 
+          case 'es': locale = 'es-ES'; break;
+          case 'fr': locale = 'fr-FR'; break;
+          case 'de': locale = 'de-DE'; break;
+          case 'ja': locale = 'ja-JP'; break;
+          case 'ko': locale = 'ko-KR'; break;
+        }
+        
+        await _tts.setLanguage(locale);
         await _tts.speak(text);
       }
     } catch (e) {

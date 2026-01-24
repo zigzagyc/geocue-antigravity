@@ -5,6 +5,7 @@ import 'package:hearhere/features/admin/domain/locked_area_model.dart';
 import 'package:hearhere/features/admin/data/locked_area_repository.dart';
 import 'package:uuid/uuid.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geolocator/geolocator.dart';
 
 part 'admin_controller.g.dart';
 
@@ -96,6 +97,23 @@ class AdminController extends _$AdminController {
     required double radius,
     required String reason,
   }) async {
+    // Check for duplicates
+    final existingAreas = await ref.read(lockedAreaRepositoryProvider).getLockedAreas();
+    for (final area in existingAreas) {
+      final distance = Geolocator.distanceBetween(latitude, longitude, area.latitude, area.longitude);
+      // If the new center is within the existing area OR the existing center is within the new area
+      // Actually, let's just say if they overlap significantly.
+      // Simplest check: unique location. If distance < 5 meters (accounting for GPS drift), reject.
+      // Better check: If valid overlap.
+      // User complaint: "lock a cue more than once".
+      // Let's implement a strict check: if distance < (radius + area.radius), they overlap.
+      // But maybe we want to allow overlapping locks? The user said "lock a cue more than once", suggesting identical locks.
+      // Let's prevent if distance is very small (< 2 meters).
+      if (distance < 5) {
+        throw Exception('This location is already locked.');
+      }
+    }
+    
     // We need current user for 'createdBy'
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) return;

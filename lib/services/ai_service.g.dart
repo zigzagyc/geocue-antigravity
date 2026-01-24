@@ -48,4 +48,4 @@ final class AiServiceProvider
   }
 }
 
-String _$aiServiceHash() => r'61f38f186ffaafabbb9f64faf6b47e48fd537435';
+String _$aiServiceHash() => r'd2037a9b1b5941e8080ab5c6b33e964eb243423f';
